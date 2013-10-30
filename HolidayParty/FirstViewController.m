@@ -14,10 +14,23 @@
 
 @implementation FirstViewController
 
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    // see if the user has registered
+    NSString *userId = [[NSUserDefaults standardUserDefaults] objectForKey:@"userId"];
+    
+    if (!userId) {
+        // prompt user for registration
+        UINavigationController *registrationController = [self.storyboard instantiateViewControllerWithIdentifier:@"RegistrationNavigationController"];
+        [self presentViewController:registrationController animated:NO completion:nil];
+    }
+
 }
 
 - (void)didReceiveMemoryWarning
