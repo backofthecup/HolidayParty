@@ -31,6 +31,8 @@
 		89E060721820B0BD002CBC39 /* AFURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E060671820B0BD002CBC39 /* AFURLConnectionOperation.m */; };
 		89E060731820B0BD002CBC39 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E060691820B0BD002CBC39 /* AFXMLRequestOperation.m */; };
 		89E060741820B0BD002CBC39 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E0606B1820B0BD002CBC39 /* UIImageView+AFNetworking.m */; };
+		89E060761820B99A002CBC39 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89E060751820B99A002CBC39 /* SystemConfiguration.framework */; };
+		89E060781820B9D5002CBC39 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89E060771820B9D5002CBC39 /* MobileCoreServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +86,8 @@
 		89E060691820B0BD002CBC39 /* AFXMLRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFXMLRequestOperation.m; sourceTree = "<group>"; };
 		89E0606A1820B0BD002CBC39 /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		89E0606B1820B0BD002CBC39 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
+		89E060751820B99A002CBC39 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		89E060771820B9D5002CBC39 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +95,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89E060781820B9D5002CBC39 /* MobileCoreServices.framework in Frameworks */,
+				89E060761820B99A002CBC39 /* SystemConfiguration.framework in Frameworks */,
 				89E0602318207C0D002CBC39 /* CoreGraphics.framework in Frameworks */,
 				89E0602518207C0D002CBC39 /* UIKit.framework in Frameworks */,
 				89E0602118207C0D002CBC39 /* Foundation.framework in Frameworks */,
@@ -133,8 +139,10 @@
 		89E0601F18207C0D002CBC39 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				89E0602018207C0D002CBC39 /* Foundation.framework */,
 				89E0602218207C0D002CBC39 /* CoreGraphics.framework */,
+				89E0602018207C0D002CBC39 /* Foundation.framework */,
+				89E060771820B9D5002CBC39 /* MobileCoreServices.framework */,
+				89E060751820B99A002CBC39 /* SystemConfiguration.framework */,
 				89E0602418207C0D002CBC39 /* UIKit.framework */,
 				89E0604218207C0E002CBC39 /* XCTest.framework */,
 			);
@@ -260,6 +268,9 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Eric Mansfield";
 				TargetAttributes = {
+					89E0601C18207C0D002CBC39 = {
+						DevelopmentTeam = TP8G35A237;
+					};
 					89E0604018207C0E002CBC39 = {
 						TestTargetID = 89E0601C18207C0D002CBC39;
 					};
@@ -449,6 +460,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HolidayParty/HolidayParty-Prefix.pch";
 				INFOPLIST_FILE = "HolidayParty/HolidayParty-Info.plist";
@@ -462,6 +474,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "HolidayParty/HolidayParty-Prefix.pch";
 				INFOPLIST_FILE = "HolidayParty/HolidayParty-Info.plist";
