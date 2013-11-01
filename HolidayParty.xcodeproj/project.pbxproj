@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8987A01618234B470000CB50 /* HttpClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 8987A01518234B470000CB50 /* HttpClient.m */; };
+		8987A01918234E160000CB50 /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8987A01818234E160000CB50 /* RegisterViewController.m */; };
 		89E0602118207C0D002CBC39 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89E0602018207C0D002CBC39 /* Foundation.framework */; };
 		89E0602318207C0D002CBC39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89E0602218207C0D002CBC39 /* CoreGraphics.framework */; };
 		89E0602518207C0D002CBC39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89E0602418207C0D002CBC39 /* UIKit.framework */; };
@@ -46,6 +48,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8987A01418234B470000CB50 /* HttpClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpClient.h; sourceTree = "<group>"; };
+		8987A01518234B470000CB50 /* HttpClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpClient.m; sourceTree = "<group>"; };
+		8987A01718234E150000CB50 /* RegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
+		8987A01818234E160000CB50 /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
 		89E0601D18207C0D002CBC39 /* HolidayParty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HolidayParty.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89E0602018207C0D002CBC39 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		89E0602218207C0D002CBC39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -154,12 +160,16 @@
 			children = (
 				89E0602F18207C0D002CBC39 /* AppDelegate.h */,
 				89E0603018207C0D002CBC39 /* AppDelegate.m */,
-				89E0603218207C0D002CBC39 /* Main.storyboard */,
 				89E0603518207C0D002CBC39 /* FirstViewController.h */,
 				89E0603618207C0D002CBC39 /* FirstViewController.m */,
+				8987A01418234B470000CB50 /* HttpClient.h */,
+				8987A01518234B470000CB50 /* HttpClient.m */,
+				89E0603B18207C0D002CBC39 /* Images.xcassets */,
+				89E0603218207C0D002CBC39 /* Main.storyboard */,
+				8987A01718234E150000CB50 /* RegisterViewController.h */,
+				8987A01818234E160000CB50 /* RegisterViewController.m */,
 				89E0603818207C0D002CBC39 /* SecondViewController.h */,
 				89E0603918207C0D002CBC39 /* SecondViewController.m */,
-				89E0603B18207C0D002CBC39 /* Images.xcassets */,
 				89E0602718207C0D002CBC39 /* Supporting Files */,
 			);
 			path = HolidayParty;
@@ -331,8 +341,10 @@
 				89E0603118207C0D002CBC39 /* AppDelegate.m in Sources */,
 				89E0603718207C0D002CBC39 /* FirstViewController.m in Sources */,
 				89E0606F1820B0BD002CBC39 /* AFJSONRequestOperation.m in Sources */,
+				8987A01918234E160000CB50 /* RegisterViewController.m in Sources */,
 				89E0602D18207C0D002CBC39 /* main.m in Sources */,
 				89E060711820B0BD002CBC39 /* AFPropertyListRequestOperation.m in Sources */,
+				8987A01618234B470000CB50 /* HttpClient.m in Sources */,
 				89E060701820B0BD002CBC39 /* AFNetworkActivityIndicatorManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -544,6 +556,7 @@
 				89E0605418207C0E002CBC39 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		89E0605518207C0E002CBC39 /* Build configuration list for PBXNativeTarget "HolidayPartyTests" */ = {
 			isa = XCConfigurationList;
@@ -552,6 +565,7 @@
 				89E0605718207C0E002CBC39 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
