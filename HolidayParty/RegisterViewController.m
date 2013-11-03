@@ -32,7 +32,7 @@
     
     HttpClient *client = [HttpClient sharedClient];
     NSUUID *device = [[UIDevice currentDevice] identifierForVendor];
-    NSDictionary *params = @{@"firstNm": @"eric", @"lastNm" : @"kasfd", @"email" : device.UUIDString};
+    NSDictionary *params = @{@"name": @"eric", @"device" : device.UUIDString};
     
     [client postPath:REGISTER_PATH parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         

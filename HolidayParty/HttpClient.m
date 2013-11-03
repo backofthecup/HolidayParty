@@ -17,7 +17,7 @@
     dispatch_once(&onceToken, ^{
         NSLog(@".configuring HTTP Client ....");
         
-        NSString *baseUrl = @"http://ec2-54-200-209-241.us-west-2.compute.amazonaws.com:8080/";
+        NSString *baseUrl = @"http://ec2-54-200-209-241.us-west-2.compute.amazonaws.com:9080/";
         NSLog(@"..Properties BaseUrl %@", baseUrl);
         
         _sharedClient = [[HttpClient alloc] initWithBaseURL:[NSURL URLWithString:baseUrl]];
