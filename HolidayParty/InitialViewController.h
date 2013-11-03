@@ -16,4 +16,6 @@
 
 - (IBAction)photoButtonTapped:(id)sender;
 - (IBAction)userButtonTapped:(id)sender;
+- (IBAction)startOverTapped:(id)sender;
+
 @end

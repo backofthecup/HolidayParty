@@ -27,11 +27,10 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     if (user) {
         [self.userButton setTitle:user forState:UIControlStateNormal];
         self.userButton.hidden = NO;
-    }
-    
-    // load the user's photo
-    [self loadUserImage];
 
+        // load the user's photo
+        [self loadUserImage];
+    }
     
     [super viewDidLoad];
     
@@ -74,6 +73,34 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     [self promptForRegistration];
 }
 
+- (IBAction)startOverTapped:(id)sender {
+    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:USER_NAME_KEY];
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    self.userButton.hidden = YES;
+    
+    NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *docsDir = dirPaths[0];
+    
+    // remove user photo
+    NSString *imagePath = [docsDir stringByAppendingPathComponent:USER_IMAGE_FILE];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:imagePath isDirectory:NO]) {
+        // remove the file
+        NSError *error = nil;
+        [fileManager removeItemAtPath:imagePath error:&error];
+    
+    }
+    
+    [self loadUserImage];
+    
+    [self promptForRegistration];
+    
+    
+
+}
+
 #pragma mark - private methods
 - (void)promptForRegistration {
     NSString *userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"userName"];
@@ -99,6 +126,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     self.userButton.hidden = NO;
     
     [[NSUserDefaults standardUserDefaults] setValue:user forKey:USER_NAME_KEY];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     
     
 }
@@ -115,6 +143,10 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         [self.photoButton setBackgroundImage:[UIImage imageWithContentsOfFile:imagePath] forState:UIControlStateNormal];
         
         [self.photoButton setTitle:@"" forState:UIControlStateNormal];
+    }
+    else {
+        [self.photoButton setBackgroundImage:nil forState:UIControlStateNormal];
+        [self.photoButton setTitle:@"Tap for Photo" forState:UIControlStateNormal];
     }
    
 }

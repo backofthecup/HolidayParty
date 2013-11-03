@@ -10,4 +10,5 @@
 
 @interface SecondViewController : UIViewController
 
+- (IBAction)clearUserDataTapped:(id)sender;
 @end
