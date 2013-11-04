@@ -6,13 +6,13 @@
 //  Copyright (c) 2013 Eric Mansfield. All rights reserved.
 //
 
-#import "SecondViewController.h"
+#import "MapViewController.h"
 
-@interface SecondViewController ()
+@interface MapViewController ()
 
 @end
 
-@implementation SecondViewController
+@implementation MapViewController
 
 - (void)viewDidLoad
 {
@@ -26,6 +26,4 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)clearUserDataTapped:(id)sender {
-}
 @end

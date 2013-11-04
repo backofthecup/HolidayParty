@@ -9,6 +9,7 @@
 #import "AFNetworking.h"
 
 static NSString * const REGISTER_PATH = @"register";
+static NSString * const UPLOAD_IMAGE_PATH = @"upload";
 
 @interface HttpClient : AFHTTPClient
 

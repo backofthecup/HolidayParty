@@ -7,14 +7,17 @@
 //
 
 #import "InitialViewController.h"
+#import "HttpClient.h"
 
 @interface InitialViewController ()
 - (void)promptForRegistration;
 - (void)registerUser:(NSString *)user;
+- (void)uploadUserImage:(NSString *)imagePath;;
 - (void)loadUserImage;
 
 @end
 
+static NSString * const USER_ID_KEY = @"userId";
 static NSString * const USER_NAME_KEY = @"userName";
 static NSString * const USER_IMAGE_FILE = @"user_image.png";
 
@@ -121,12 +124,35 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 
 - (void)registerUser:(NSString *)user {
     NSLog(@"..Registering user... %@", user);
-    [self.userButton setTitle:user forState:UIControlStateNormal];
+    HttpClient *client = [HttpClient sharedClient];
+    NSUUID *device = [[UIDevice currentDevice] identifierForVendor];
+    NSDictionary *params = @{@"name": @"eric", @"device" : device.UUIDString};
     
-    self.userButton.hidden = NO;
-    
-    [[NSUserDefaults standardUserDefaults] setValue:user forKey:USER_NAME_KEY];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [client postPath:REGISTER_PATH parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSLog(@"registration successfull %@", responseObject);
+        
+        NSDictionary *attributes = responseObject;
+        NSInteger userId = [attributes[@"userId"] integerValue];
+        NSLog(@"User id from response %i", userId);
+        [self.userButton setTitle:user forState:UIControlStateNormal];
+        
+        self.userButton.hidden = NO;
+        
+        [[NSUserDefaults standardUserDefaults] setInteger:userId forKey:USER_ID_KEY];
+        [[NSUserDefaults standardUserDefaults] setValue:user forKey:USER_NAME_KEY];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"registration failed at url... %@", operation.request.URL);
+        NSLog(@"error %@", error.localizedDescription);
+        
+        NSDictionary *userInfo = error.userInfo;
+        [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+            NSLog(@"%@ - %@", key, obj);
+        }];
+    }];
+
     
     
 }
@@ -149,6 +175,36 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         [self.photoButton setTitle:@"Tap for Photo" forState:UIControlStateNormal];
     }
    
+}
+
+- (void)uploadUserImage:(NSString *)imagePath {
+    NSInteger userId = [[NSUserDefaults standardUserDefaults] integerForKey:USER_ID_KEY];
+    NSString *suserId = [NSString stringWithFormat:@"%i", userId];
+    
+    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    
+    HttpClient *client = [HttpClient sharedClient];
+    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:UPLOAD_IMAGE_PATH parameters:@{@"userId": suserId} constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileData:data name:@"upload" fileName:@"filename" mimeType:@"image/png"];
+    }];
+    
+    AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSLog(@"...content upload success.... %@", responseObject);
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"..Failure uploading content .. %@", error.localizedDescription);
+        NSDictionary *userInfo = error.userInfo;
+        [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+            NSLog(@"%@ - %@", key, obj);
+        }];
+
+        [[[UIAlertView alloc] initWithTitle:@"Upload Failed" message:@"Please make sure you have a valid network connection. You can retry this by tapping the Log tab at the bottom." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        
+    }];
+    
+    [client enqueueHTTPRequestOperation:operation];
+    
 }
 
 #pragma mark - UIAlertViewDelegate
@@ -191,7 +247,10 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     [self loadUserImage];
     
     [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    [self uploadUserImage:imagePath];
 
 }
+
 
 @end

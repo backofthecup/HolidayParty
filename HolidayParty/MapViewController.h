@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SecondViewController : UIViewController
+@interface MapViewController : UIViewController
 
-- (IBAction)clearUserDataTapped:(id)sender;
 @end
