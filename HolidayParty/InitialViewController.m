@@ -162,7 +162,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         
         NSDictionary *attributes = responseObject;
         NSInteger userId = [attributes[@"userId"] integerValue];
-        NSLog(@"User id from response %li", (long)userId);
+        NSLog(@"User id from    response %li", (long)userId);
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
         
         self.userButton.hidden = NO;
