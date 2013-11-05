@@ -74,7 +74,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 - (IBAction)photoButtonTapped:(id)sender {
     UIImagePickerController *controller = [[UIImagePickerController alloc] init];
     controller.delegate = self;
-    controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+//    controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
     
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         controller.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -159,8 +159,8 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSUUID *device = [[UIDevice currentDevice] identifierForVendor];
     NSDictionary *params = @{@"name": user, @"device" : device.UUIDString};
     
-    [client postPath:REGISTER_PATH parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
+
+    [client POST:REGISTER_PATH parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"registration successfull %@", responseObject);
         
         NSDictionary *attributes = responseObject;
@@ -173,7 +173,6 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         [[NSUserDefaults standardUserDefaults] setInteger:userId forKey:USER_ID_KEY];
         [[NSUserDefaults standardUserDefaults] setValue:user forKey:USER_NAME_KEY];
         [[NSUserDefaults standardUserDefaults] synchronize];
-
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"registration failed at url... %@", operation.request.URL);
         NSLog(@"error %@", error.localizedDescription);
@@ -184,6 +183,31 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         }];
     }];
     
+//    [client postPath:REGISTER_PATH parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//        
+//        NSLog(@"registration successfull %@", responseObject);
+//        
+//        NSDictionary *attributes = responseObject;
+//        NSInteger userId = [attributes[@"userId"] integerValue];
+//        NSLog(@"User id from    response %li", (long)userId);
+//        [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
+//        
+//        self.userButton.hidden = NO;
+//        
+//        [[NSUserDefaults standardUserDefaults] setInteger:userId forKey:USER_ID_KEY];
+//        [[NSUserDefaults standardUserDefaults] setValue:user forKey:USER_NAME_KEY];
+//        [[NSUserDefaults standardUserDefaults] synchronize];
+//
+//    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//        NSLog(@"registration failed at url... %@", operation.request.URL);
+//        NSLog(@"error %@", error.localizedDescription);
+//        
+//        NSDictionary *userInfo = error.userInfo;
+//        [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+//            NSLog(@"%@ - %@", key, obj);
+//        }];
+//    }];
+//    
 }
 
 - (void)loadUserImage {
@@ -215,26 +239,41 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSData *data = [NSData dataWithContentsOfFile:imagePath];
     
     HttpClient *client = [HttpClient sharedClient];
-    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:UPLOAD_IMAGE_PATH parameters:@{@"userid": suserId} constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+    [client POST:UPLOAD_IMAGE_PATH parameters:@{@"userid" : suserId} constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:data name:@"filename" fileName:@"user.png" mimeType:@"image/png"];
-    }];
-    
-    AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
+    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"...content upload success.... %@", responseObject);
-        
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"..Failure uploading content .. %@", error.localizedDescription);
         NSDictionary *userInfo = error.userInfo;
         [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
             NSLog(@"%@ - %@", key, obj);
         }];
-
-        [[[UIAlertView alloc] initWithTitle:@"Upload Failed" message:@"Please make sure you have a valid network connection." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         
+        [[[UIAlertView alloc] initWithTitle:@"Upload Failed" message:@"Please make sure you have a valid network connection." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }];
     
-    [client enqueueHTTPRequestOperation:operation];
+    
+//    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:UPLOAD_IMAGE_PATH parameters:@{@"userid": suserId} constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+//        [formData appendPartWithFileData:data name:@"filename" fileName:@"user.png" mimeType:@"image/png"];
+//    }];
+    
+//    AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//        
+//        NSLog(@"...content upload success.... %@", responseObject);
+//        
+//    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//        NSLog(@"..Failure uploading content .. %@", error.localizedDescription);
+//        NSDictionary *userInfo = error.userInfo;
+//        [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+//            NSLog(@"%@ - %@", key, obj);
+//        }];
+//
+//        [[[UIAlertView alloc] initWithTitle:@"Upload Failed" message:@"Please make sure you have a valid network connection." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+//        
+//    }];
+//    
+//    [client enqueueHTTPRequestOperation:operation];
     
 }
 

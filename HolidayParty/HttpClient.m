@@ -29,17 +29,20 @@
 #pragma mark - Overriden methods
 - (id)initWithBaseURL:(NSURL *)url {
     self = [super initWithBaseURL:url];
+    
     if (!self) {
         return nil;
     }
     
-    self.parameterEncoding = AFJSONParameterEncoding;
+//    self.parameterEncoding = AFJSONParameterEncoding;
 
-    [self registerHTTPOperationClass:[AFJSONRequestOperation class]];
+    self.requestSerializer = [AFJSONRequestSerializer serializer];
+    self.responseSerializer = [AFJSONResponseSerializer serializer];
+//    [self registerHTTPOperationClass:[AFJSONRequestOperation class]];
     
     // Accept HTTP Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
     
-	[self setDefaultHeader:@"Accept" value:@"application/json"];
+//	[self setDefaultHeader:@"Accept" value:@"application/json"];
     
 //    [AFJSONRequestOperation addAcceptableContentTypes:[NSSet setWithObjects:@"application/json", @"text/json", @"image/png", @"audio/wav", nil]];
     
