@@ -18,7 +18,8 @@
 
 - (void)promptForRegistration;
 - (void)registerUser:(NSString *)user;
-- (void)uploadUserImage:(NSString *)imagePath;;
+- (void)uploadUserImage:(NSString *)imagePath;
+
 - (void)loadUserImage;
 - (void)startRanging;
 - (void)stopRanging;
