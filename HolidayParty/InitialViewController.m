@@ -138,7 +138,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         // overwriting previous user, allow for Cancel
         cancelButtonTitle = @"Cancel";
     }
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ObjectLab Holiday Party" message:@"Welcome to the ObjectLab Holiday Party. Please reigster by entering your name (You can change this at anytime):" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"Register", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ObjectLab Holiday Party" message:@"Welcome to the ObjectLab Holiday Party. Please register by entering your name (You can change this at anytime):" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"Register", nil];
     alert.alertViewStyle = UIAlertViewStylePlainTextInput;
     UITextField *text = [alert textFieldAtIndex:0];
     text.autocapitalizationType = UITextAutocapitalizationTypeSentences;
