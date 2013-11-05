@@ -10,10 +10,18 @@
 #import "HttpClient.h"
 
 @interface InitialViewController ()
+
+@property (nonatomic, strong) CLBeaconRegion *beaconRegion;
+@property (nonatomic, strong) CLLocationManager *locationManager;
+@property (nonatomic, strong) NSMutableDictionary *beacons;
+@property (nonatomic, strong) NSString *originalWelcomeText;
+
 - (void)promptForRegistration;
 - (void)registerUser:(NSString *)user;
 - (void)uploadUserImage:(NSString *)imagePath;;
 - (void)loadUserImage;
+- (void)startRanging;
+- (void)stopRanging;
 
 @end
 
@@ -26,9 +34,10 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 
 - (void)viewDidLoad
 {
+    _originalWelcomeText = self.welcomeLabel.text;
     NSString *user = [[NSUserDefaults standardUserDefaults] valueForKey:USER_NAME_KEY];
     if (user) {
-        [self.userButton setTitle:user forState:UIControlStateNormal];
+        [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
         self.userButton.hidden = NO;
 
         // load the user's photo
@@ -60,7 +69,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     // Dispose of any resources that can be recreated.
 }
 
-
+#pragma mark - IBAction messages
 - (IBAction)photoButtonTapped:(id)sender {
     UIImagePickerController *controller = [[UIImagePickerController alloc] init];
     controller.delegate = self;
@@ -72,12 +81,19 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     [self presentViewController:controller animated:YES completion:nil];
 }
 
+- (IBAction)claimBeaconTapped:(id)sender {
+    NSInteger count = [self.beaconsFoundLabel.text integerValue];
+    count ++;
+    self.beaconsFoundLabel.text = [NSString stringWithFormat:@"%d", count];
+}
+
 - (IBAction)userButtonTapped:(id)sender {
     [self promptForRegistration];
 }
 
 - (IBAction)startOverTapped:(id)sender {
     [[NSUserDefaults standardUserDefaults] setValue:nil forKey:USER_NAME_KEY];
+    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:USER_ID_KEY];
     
     [[NSUserDefaults standardUserDefaults] synchronize];
     
@@ -100,8 +116,16 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     
     [self promptForRegistration];
     
-    
+}
 
+- (IBAction)rangingSwitchChanged:(id)sender {
+    if (_rangingSwitch.on) {
+        [self startRanging];
+    }
+    else {
+        [self stopRanging];
+    }
+    
 }
 
 #pragma mark - private methods
@@ -116,7 +140,10 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ObjectLab Holiday Party" message:@"Welcome to the ObjectLab Holiday Party. Please reigster by entering your name (You can change this at anytime):" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"Register", nil];
     alert.alertViewStyle = UIAlertViewStylePlainTextInput;
     UITextField *text = [alert textFieldAtIndex:0];
+    text.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+    text.clearButtonMode = UITextFieldViewModeWhileEditing;
     text.placeholder = @"Your name";
+    text.text = userName;
     text.delegate = self;
     [alert show];
     
@@ -126,7 +153,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSLog(@"..Registering user... %@", user);
     HttpClient *client = [HttpClient sharedClient];
     NSUUID *device = [[UIDevice currentDevice] identifierForVendor];
-    NSDictionary *params = @{@"name": @"eric", @"device" : device.UUIDString};
+    NSDictionary *params = @{@"name": user, @"device" : device.UUIDString};
     
     [client postPath:REGISTER_PATH parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         
@@ -134,8 +161,8 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         
         NSDictionary *attributes = responseObject;
         NSInteger userId = [attributes[@"userId"] integerValue];
-        NSLog(@"User id from response %i", userId);
-        [self.userButton setTitle:user forState:UIControlStateNormal];
+        NSLog(@"User id from response %li", (long)userId);
+        [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
         
         self.userButton.hidden = NO;
         
@@ -152,8 +179,6 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
             NSLog(@"%@ - %@", key, obj);
         }];
     }];
-
-    
     
 }
 
@@ -181,11 +206,13 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSInteger userId = [[NSUserDefaults standardUserDefaults] integerForKey:USER_ID_KEY];
     NSString *suserId = [NSString stringWithFormat:@"%i", userId];
     
+    NSLog(@"upload image for user %i with %@", userId, imagePath);
+    
     NSData *data = [NSData dataWithContentsOfFile:imagePath];
     
     HttpClient *client = [HttpClient sharedClient];
-    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:UPLOAD_IMAGE_PATH parameters:@{@"userId": suserId} constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        [formData appendPartWithFileData:data name:@"upload" fileName:@"filename" mimeType:@"image/png"];
+    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:UPLOAD_IMAGE_PATH parameters:@{@"userid": suserId} constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileData:data name:@"filename" fileName:@"user.png" mimeType:@"image/png"];
     }];
     
     AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -199,12 +226,34 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
             NSLog(@"%@ - %@", key, obj);
         }];
 
-        [[[UIAlertView alloc] initWithTitle:@"Upload Failed" message:@"Please make sure you have a valid network connection. You can retry this by tapping the Log tab at the bottom." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        [[[UIAlertView alloc] initWithTitle:@"Upload Failed" message:@"Please make sure you have a valid network connection." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         
     }];
     
     [client enqueueHTTPRequestOperation:operation];
     
+}
+
+- (void)startRanging {
+    NSLog(@"...starting to range.....");
+    _beacons = [[NSMutableDictionary alloc] init];
+    
+    // This location manager will be used to demonstrate how to range beacons.
+    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager.delegate = self;
+
+    NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:@"E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"];
+    _beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:[uuid UUIDString]];
+
+    [_locationManager startRangingBeaconsInRegion:_beaconRegion];
+}
+
+- (void)stopRanging {
+    NSLog(@"..stopping ranging.....");
+    [_locationManager stopRangingBeaconsInRegion:_beaconRegion];
+    
+    self.claimBeaconButton.hidden = YES;
+    self.welcomeLabel.text = _originalWelcomeText;
 }
 
 #pragma mark - UIAlertViewDelegate
@@ -250,6 +299,45 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     
     [self uploadUserImage:imagePath];
 
+}
+
+#pragma mark - CLLocationManagerDelegate 
+- (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region
+{
+    NSLog(@"...locationManager didRangeBeacons....");
+    
+    // CoreLocation will call this delegate method at 1 Hz with updated range information.
+    // Beacons will be categorized and displayed by proximity.
+    [_beacons removeAllObjects];
+    NSArray *unknownBeacons = [beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityUnknown]];
+    if([unknownBeacons count])
+        [_beacons setObject:unknownBeacons forKey:[NSNumber numberWithInt:CLProximityUnknown]];
+    
+    // immediate
+    NSArray *immediateBeacons = [beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityImmediate]];
+    if([immediateBeacons count]) {
+        NSLog(@"..immediate beacon foiund...");
+        [_beacons setObject:immediateBeacons forKey:[NSNumber numberWithInt:CLProximityImmediate]];
+        
+        self.welcomeLabel.text = @"Beacon Found!";
+        self.claimBeaconButton.hidden = NO;
+        
+    }
+    
+    NSArray *nearBeacons = [beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityNear]];
+    if([nearBeacons count]){
+        [_beacons setObject:nearBeacons forKey:[NSNumber numberWithInt:CLProximityNear]];
+        
+    }
+    
+    NSArray *farBeacons = [beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityFar]];
+    if([farBeacons count]) {
+        [_beacons setObject:farBeacons forKey:[NSNumber numberWithInt:CLProximityFar]];
+        self.welcomeLabel.text = self.originalWelcomeText;
+        self.claimBeaconButton.hidden = YES;
+
+    }
+    
 }
 
 
