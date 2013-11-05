@@ -73,7 +73,8 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 - (IBAction)photoButtonTapped:(id)sender {
     UIImagePickerController *controller = [[UIImagePickerController alloc] init];
     controller.delegate = self;
-    controller.mediaTypes = @[(NSString *) kUTTypeImage];
+    controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+    
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         controller.sourceType = UIImagePickerControllerSourceTypeCamera;
     }
