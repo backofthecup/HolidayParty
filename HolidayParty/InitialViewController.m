@@ -76,7 +76,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     controller.delegate = self;
     
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+//        controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
         controller.sourceType = UIImagePickerControllerSourceTypeCamera;
     }
     
@@ -235,18 +235,21 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 
 - (void)uploadUserImage:(NSString *)imagePath {
     NSInteger userId = [[NSUserDefaults standardUserDefaults] integerForKey:USER_ID_KEY];
-    NSString *suserId = [NSString stringWithFormat:@"%i", userId];
+    NSString *suserId = [NSString stringWithFormat:@"%li", (long)userId];
     
-    NSLog(@"upload image for user %i with %@", userId, imagePath);
+    NSLog(@"upload image for user %li with %@", (long)userId, imagePath);
     
     NSData *data = [NSData dataWithContentsOfFile:imagePath];
     
     HttpClient *client = [HttpClient sharedClient];
     [client POST:UPLOAD_IMAGE_PATH parameters:@{@"userid" : suserId} constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:data name:@"filename" fileName:@"user.png" mimeType:@"image/png"];
-    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    }
+    success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"...content upload success.... %@", responseObject);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+    }
+    failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"..Failure uploading content .. %@", error.localizedDescription);
         NSDictionary *userInfo = error.userInfo;
         [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
@@ -321,6 +324,13 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     NSData *data = [NSData dataWithData:UIImagePNGRepresentation(image)];
+    
+    // orientation face up
+    CGImageRef cgRef = image.CGImage;
+    image = [[UIImage alloc] initWithCGImage:cgRef scale:1.0 orientation:UIImageOrientationUp];
+    
+    // put in data
+    data = [NSData dataWithData:UIImagePNGRepresentation(image)];
     
     NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *docsDir = dirPaths[0];
