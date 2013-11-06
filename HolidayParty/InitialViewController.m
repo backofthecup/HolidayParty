@@ -9,6 +9,7 @@
 #import "InitialViewController.h"
 #import "HttpClient.h"
 #import "TSMessageView.h"
+#import "UIImage+Resize.h"
 
 @interface InitialViewController ()
 
@@ -348,20 +349,32 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     NSData *data = [NSData dataWithData:UIImagePNGRepresentation(image)];
     
-    // orientation face up
-    CGImageRef cgRef = image.CGImage;
-    image = [[UIImage alloc] initWithCGImage:cgRef scale:1.0 orientation:UIImageOrientationUp];
     
-    // put in data
-    data = [NSData dataWithData:UIImagePNGRepresentation(image)];
+    //CM for new resize and image orientation fixes 
+    CGSize constraint = CGSizeMake(300, 200);
+    
+    
+    UIImage *newImage = [image resizedImageToSize:constraint];
+    
+    NSData *newData = [NSData dataWithData:UIImagePNGRepresentation(newImage)];
+    
+    
+    // orientation face up
+//    CGImageRef cgRef = image.CGImage;
+//    image = [[UIImage alloc] initWithCGImage:cgRef scale:1.0 orientation:UIImageOrientationUp];
+//    
+//    // put in data
+//    data = [NSData dataWithData:UIImagePNGRepresentation(image)];
     
     NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *docsDir = dirPaths[0];
     
     // write the image to disk
     NSString *imagePath = [docsDir stringByAppendingPathComponent:USER_IMAGE_FILE];
-    [data writeToFile:imagePath atomically:YES];
+   // [data writeToFile:imagePath atomically:YES];
 
+    [newData writeToFile:imagePath atomically:YES];
+    
     [self loadUserImage];
     
     [picker dismissViewControllerAnimated:YES completion:nil];
