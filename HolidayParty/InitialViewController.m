@@ -39,6 +39,14 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 - (void)viewDidLoad
 {
     _originalWelcomeText = self.welcomeLabel.text;
+    
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
+                                                  forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [UIImage new];
+    self.navigationController.navigationBar.translucent = YES;
+    
+    
+    
     NSString *user = [[NSUserDefaults standardUserDefaults] valueForKey:USER_NAME_KEY];
     if (user) {
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
@@ -162,7 +170,9 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSUUID *device = [[UIDevice currentDevice] identifierForVendor];
     NSDictionary *params = @{@"name": user, @"device" : device.UUIDString};
     
-
+    
+	[self.navigationController showSGProgressWithDuration:4 andTintColor:[UIColor blueColor]];
+    
     [client POST:REGISTER_PATH parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"registration successfull %@", responseObject);
         
@@ -187,6 +197,10 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         [[NSUserDefaults standardUserDefaults] setInteger:userId forKey:USER_ID_KEY];
         [[NSUserDefaults standardUserDefaults] setValue:user forKey:USER_NAME_KEY];
         [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        [self.navigationController finishSGProgress];
+        
+        
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"registration failed at url... %@", operation.request.URL);
         NSLog(@"error %@", error.localizedDescription);
@@ -201,6 +215,8 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
                                      buttonCallback:nil
                                          atPosition:TSMessageNotificationPositionBottom
                                 canBeDismisedByUser:YES];
+        
+        [self.navigationController finishSGProgress];
         
         NSDictionary *userInfo = error.userInfo;
         [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
@@ -228,6 +244,8 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"registration failed at url... %@", operation.request.URL);
         NSLog(@"error %@", error.localizedDescription);
+        
+        [self.navigationController finishSGProgress];
         
         NSDictionary *userInfo = error.userInfo;
         [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
@@ -265,12 +283,15 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     
     NSData *data = [NSData dataWithContentsOfFile:imagePath];
     
+    [self.navigationController showSGProgressWithDuration:4 andTintColor:[UIColor blueColor]];
+    
     HttpClient *client = [HttpClient sharedClient];
     [client POST:UPLOAD_IMAGE_PATH parameters:@{@"userid" : suserId} constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:data name:@"filename" fileName:@"user.png" mimeType:@"image/png"];
     }
     success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"...content upload success.... %@", responseObject);
+        [self.navigationController finishSGProgress];
         
     }
     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -279,6 +300,8 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
             NSLog(@"%@ - %@", key, obj);
         }];
+        
+        [self.navigationController finishSGProgress];
         
         [[[UIAlertView alloc] initWithTitle:@"Upload Failed" message:@"Please make sure you have a valid network connection." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }];
