@@ -8,6 +8,7 @@
 
 #import "InitialViewController.h"
 #import "HttpClient.h"
+#import "TSMessageView.h"
 
 @interface InitialViewController ()
 
@@ -171,12 +172,34 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         
         self.userButton.hidden = NO;
         
+        [TSMessage showNotificationInViewController:self
+                                              title:@"Yeah!"
+                                           subtitle:@"Thanks for registering."
+                                               type:TSMessageNotificationTypeSuccess
+                                           duration:TSMessageNotificationDurationAutomatic
+                                           callback:nil
+                                        buttonTitle:nil
+                                     buttonCallback:nil
+                                         atPosition:TSMessageNotificationPositionTop
+                                canBeDismisedByUser:YES];
+        
         [[NSUserDefaults standardUserDefaults] setInteger:userId forKey:USER_ID_KEY];
         [[NSUserDefaults standardUserDefaults] setValue:user forKey:USER_NAME_KEY];
         [[NSUserDefaults standardUserDefaults] synchronize];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"registration failed at url... %@", operation.request.URL);
         NSLog(@"error %@", error.localizedDescription);
+        
+        [TSMessage showNotificationInViewController:self
+                                              title:NSLocalizedString(@"Registration Failed!", nil)
+                                           subtitle:NSLocalizedString(@"Check your network connection", nil)
+                                               type:TSMessageNotificationTypeError
+                                           duration:TSMessageNotificationDurationAutomatic
+                                           callback:nil
+                                        buttonTitle:nil
+                                     buttonCallback:nil
+                                         atPosition:TSMessageNotificationPositionBottom
+                                canBeDismisedByUser:YES];
         
         NSDictionary *userInfo = error.userInfo;
         [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
