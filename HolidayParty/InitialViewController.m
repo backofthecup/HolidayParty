@@ -83,6 +83,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     [self presentViewController:controller animated:YES completion:nil];
     
     NSLog(@"this is a change");
+    NSLog(@"this is another change");
 }
 
 - (IBAction)claimBeaconTapped:(id)sender {
