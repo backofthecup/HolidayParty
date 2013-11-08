@@ -370,16 +370,12 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSLog(@"image picker delegate.....");
     
     UIImage *image = info[UIImagePickerControllerOriginalImage];
-    NSData *data = [NSData dataWithData:UIImagePNGRepresentation(image)];
-    
     
     //CM for new resize and image orientation fixes 
-    CGSize constraint = CGSizeMake(300, 200);
+    CGSize constraint = CGSizeMake(400, 400);
+    UIImage *newImage = [image resizedImage:constraint interpolationQuality:kCGInterpolationHigh ];
     
-    
-    UIImage *newImage = [image resizedImageToSize:constraint];
-    
-    NSData *newData = [NSData dataWithData:UIImagePNGRepresentation(newImage)];
+    NSData *data = [NSData dataWithData:UIImagePNGRepresentation(newImage)];
     
     
     // orientation face up
@@ -396,7 +392,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSString *imagePath = [docsDir stringByAppendingPathComponent:USER_IMAGE_FILE];
    // [data writeToFile:imagePath atomically:YES];
 
-    [newData writeToFile:imagePath atomically:YES];
+    [data writeToFile:imagePath atomically:YES];
     
     [self loadUserImage];
     

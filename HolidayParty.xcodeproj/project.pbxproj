@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1A5D223F182A665700284926 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A5D223E182A665700284926 /* UIImage+Resize.m */; };
 		30829217A9D744C782DE9AE0 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A16D6153324D648867CCB1 /* libPods.a */; };
 		896426B91827EBF500F0EB6B /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 896426B71827EBF500F0EB6B /* CoreBluetooth.framework */; };
 		896426BA1827EBF500F0EB6B /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 896426B81827EBF500F0EB6B /* CoreLocation.framework */; };
@@ -30,6 +29,9 @@
 		89E0604F18207C0E002CBC39 /* HolidayPartyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E0604E18207C0E002CBC39 /* HolidayPartyTests.m */; };
 		89E060761820B99A002CBC39 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89E060751820B99A002CBC39 /* SystemConfiguration.framework */; };
 		89E060781820B9D5002CBC39 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89E060771820B9D5002CBC39 /* MobileCoreServices.framework */; };
+		89E6EDBB182D4A010014F8B9 /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E6EDB6182D4A010014F8B9 /* UIImage+Alpha.m */; };
+		89E6EDBC182D4A010014F8B9 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E6EDB8182D4A010014F8B9 /* UIImage+Resize.m */; };
+		89E6EDBD182D4A010014F8B9 /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E6EDBA182D4A010014F8B9 /* UIImage+RoundedCorner.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,8 +45,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1A5D223D182A665700284926 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
-		1A5D223E182A665700284926 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		8339C346698C442EA6AF1F10 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		896426B71827EBF500F0EB6B /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		896426B81827EBF500F0EB6B /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -75,6 +75,12 @@
 		89E0604E18207C0E002CBC39 /* HolidayPartyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HolidayPartyTests.m; sourceTree = "<group>"; };
 		89E060751820B99A002CBC39 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		89E060771820B9D5002CBC39 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		89E6EDB5182D4A010014F8B9 /* UIImage+Alpha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Alpha.h"; sourceTree = "<group>"; };
+		89E6EDB6182D4A010014F8B9 /* UIImage+Alpha.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Alpha.m"; sourceTree = "<group>"; };
+		89E6EDB7182D4A010014F8B9 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
+		89E6EDB8182D4A010014F8B9 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
+		89E6EDB9182D4A010014F8B9 /* UIImage+RoundedCorner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+RoundedCorner.h"; sourceTree = "<group>"; };
+		89E6EDBA182D4A010014F8B9 /* UIImage+RoundedCorner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RoundedCorner.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,8 +116,6 @@
 		89E0601418207C0D002CBC39 = {
 			isa = PBXGroup;
 			children = (
-				1A5D223D182A665700284926 /* UIImage+Resize.h */,
-				1A5D223E182A665700284926 /* UIImage+Resize.m */,
 				89E0602618207C0D002CBC39 /* HolidayParty */,
 				89E0604818207C0E002CBC39 /* HolidayPartyTests */,
 				89E0601F18207C0D002CBC39 /* Frameworks */,
@@ -149,6 +153,12 @@
 		89E0602618207C0D002CBC39 /* HolidayParty */ = {
 			isa = PBXGroup;
 			children = (
+				89E6EDB5182D4A010014F8B9 /* UIImage+Alpha.h */,
+				89E6EDB6182D4A010014F8B9 /* UIImage+Alpha.m */,
+				89E6EDB7182D4A010014F8B9 /* UIImage+Resize.h */,
+				89E6EDB8182D4A010014F8B9 /* UIImage+Resize.m */,
+				89E6EDB9182D4A010014F8B9 /* UIImage+RoundedCorner.h */,
+				89E6EDBA182D4A010014F8B9 /* UIImage+RoundedCorner.m */,
 				89E0602F18207C0D002CBC39 /* AppDelegate.h */,
 				89E0603018207C0D002CBC39 /* AppDelegate.m */,
 				89E0603518207C0D002CBC39 /* InitialViewController.h */,
@@ -328,12 +338,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89E6EDBD182D4A010014F8B9 /* UIImage+RoundedCorner.m in Sources */,
 				89E0603A18207C0D002CBC39 /* MapViewController.m in Sources */,
 				89E0603118207C0D002CBC39 /* AppDelegate.m in Sources */,
+				89E6EDBB182D4A010014F8B9 /* UIImage+Alpha.m in Sources */,
 				89E0603718207C0D002CBC39 /* InitialViewController.m in Sources */,
 				89E0602D18207C0D002CBC39 /* main.m in Sources */,
 				8987A01618234B470000CB50 /* HttpClient.m in Sources */,
-				1A5D223F182A665700284926 /* UIImage+Resize.m in Sources */,
+				89E6EDBC182D4A010014F8B9 /* UIImage+Resize.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
