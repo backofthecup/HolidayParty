@@ -15,7 +15,8 @@
 
 @property (nonatomic, strong) CLBeaconRegion *beaconRegion;
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) NSDictionary *beacons;
+//@property (nonatomic, strong) NSMutableArray *beacons;
+@property (nonatomic, strong) NSMutableArray *rangedBeacons;
 @property (nonatomic, strong) NSMutableArray *claimedBeacons;
 
 @property (nonatomic, strong) NSString *originalWelcomeText;
@@ -48,6 +49,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     self.navigationController.navigationBar.translucent = YES;
     
     _claimedBeacons = [NSMutableArray array];
+    _rangedBeacons = [NSMutableArray array];
     
     NSString *user = [[NSUserDefaults standardUserDefaults] valueForKey:USER_NAME_KEY];
     if (user) {
@@ -88,12 +90,12 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [_beacons count];
+    return [_rangedBeacons count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    CLBeacon *beacon = _beacons[indexPath.row];
+    CLBeacon *beacon = _rangedBeacons[indexPath.row];
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     if ([_claimedBeacons containsObject:beacon]) {
@@ -111,7 +113,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // claim the beacon
     NSLog(@"didselect row....");
-    CLBeacon *beacon = _beacons[indexPath.row];
+    CLBeacon *beacon = _rangedBeacons[indexPath.row];
     if ([_claimedBeacons containsObject:beacon]) {
         // ignore
     }
@@ -350,7 +352,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     self.welcomeLabel.hidden = YES;
     self.tableView.hidden = NO;
     
-    _beacons = [NSMutableArray array];
+//    _beacons = [NSMutableArray array];
     
     // This location manager will be used to demonstrate how to range beacons.
     _locationManager = [[CLLocationManager alloc] init];
@@ -446,18 +448,8 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 {
     NSLog(@"...locationManager didRangeBeacons....%i", [beacons count]);
     
-    for (CLBeacon *rangedBeacon in beacons) {
-        BOOL found = NO;
-        for (CLBeacon *beacon in _beacons) {
-            if ([rangedBeacon.major integerValue] == [beacon.major integerValue]) {
-                found = YES;
-                [_beacons setObject:rangedBeacon atIndexedSubscript:<#(NSUInteger)#>]
-            }
-        }
-        if (!found) {
-            [_beacons addObject:rangedBeacon];
-        }
-    }
+
+    _rangedBeacons.array = beacons;
     
     [self.tableView reloadData];
 }
