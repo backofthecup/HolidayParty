@@ -15,7 +15,9 @@
 
 @property (nonatomic, strong) CLBeaconRegion *beaconRegion;
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) NSMutableDictionary *beacons;
+@property (nonatomic, strong) NSDictionary *beacons;
+@property (nonatomic, strong) NSMutableArray *claimedBeacons;
+
 @property (nonatomic, strong) NSString *originalWelcomeText;
 
 - (void)promptForRegistration;
@@ -45,7 +47,7 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     self.navigationController.navigationBar.shadowImage = [UIImage new];
     self.navigationController.navigationBar.translucent = YES;
     
-    
+    _claimedBeacons = [NSMutableArray array];
     
     NSString *user = [[NSUserDefaults standardUserDefaults] valueForKey:USER_NAME_KEY];
     if (user) {
@@ -80,6 +82,45 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark - UITableViewDelegate
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return [_beacons count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    CLBeacon *beacon = _beacons[indexPath.row];
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if ([_claimedBeacons containsObject:beacon]) {
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        cell.textLabel.text = [NSString stringWithFormat:@"Beacon %i claimed!", beacon.major.intValue];
+        
+}
+    else {
+        cell.textLabel.text = [NSString stringWithFormat:@"Beacon %i %1.2f meters", beacon.major.intValue, beacon.accuracy];
+    }
+    return cell;
+    
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // claim the beacon
+    NSLog(@"didselect row....");
+    CLBeacon *beacon = _beacons[indexPath.row];
+    if ([_claimedBeacons containsObject:beacon]) {
+        // ignore
+    }
+    else {
+        [_claimedBeacons addObject:beacon];
+    }
+    NSLog(@"claimed beacon coundt %i", [_claimedBeacons count]);
+}
+
 #pragma mark - IBAction messages
 - (IBAction)photoButtonTapped:(id)sender {
     UIImagePickerController *controller = [[UIImagePickerController alloc] init];
@@ -96,11 +137,6 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSLog(@"this is another change");
 }
 
-- (IBAction)claimBeaconTapped:(id)sender {
-    NSInteger count = [self.beaconsFoundLabel.text integerValue];
-    count ++;
-    self.beaconsFoundLabel.text = [NSString stringWithFormat:@"%d", count];
-}
 
 - (IBAction)userButtonTapped:(id)sender {
     [self promptForRegistration];
@@ -311,7 +347,10 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 
 - (void)startRanging {
     NSLog(@"...starting to range.....");
-    _beacons = [[NSMutableDictionary alloc] init];
+    self.welcomeLabel.hidden = YES;
+    self.tableView.hidden = NO;
+    
+    _beacons = [NSMutableArray array];
     
     // This location manager will be used to demonstrate how to range beacons.
     _locationManager = [[CLLocationManager alloc] init];
@@ -327,8 +366,8 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
     NSLog(@"..stopping ranging.....");
     [_locationManager stopRangingBeaconsInRegion:_beaconRegion];
     
-    self.claimBeaconButton.hidden = YES;
-    self.welcomeLabel.text = _originalWelcomeText;
+    self.welcomeLabel.hidden = NO;
+    self.tableView.hidden = YES;
 }
 
 #pragma mark - UIAlertViewDelegate
@@ -405,40 +444,22 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
 #pragma mark - CLLocationManagerDelegate 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region
 {
-    NSLog(@"...locationManager didRangeBeacons....");
+    NSLog(@"...locationManager didRangeBeacons....%i", [beacons count]);
     
-    // CoreLocation will call this delegate method at 1 Hz with updated range information.
-    // Beacons will be categorized and displayed by proximity.
-    [_beacons removeAllObjects];
-    NSArray *unknownBeacons = [beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityUnknown]];
-    if([unknownBeacons count])
-        [_beacons setObject:unknownBeacons forKey:[NSNumber numberWithInt:CLProximityUnknown]];
-    
-    // immediate
-    NSArray *immediateBeacons = [beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityImmediate]];
-    if([immediateBeacons count]) {
-        NSLog(@"..immediate beacon foiund...");
-        [_beacons setObject:immediateBeacons forKey:[NSNumber numberWithInt:CLProximityImmediate]];
-        
-        self.welcomeLabel.text = @"Beacon Found!";
-        self.claimBeaconButton.hidden = NO;
-        
+    for (CLBeacon *rangedBeacon in beacons) {
+        BOOL found = NO;
+        for (CLBeacon *beacon in _beacons) {
+            if ([rangedBeacon.major integerValue] == [beacon.major integerValue]) {
+                found = YES;
+                [_beacons setObject:rangedBeacon atIndexedSubscript:<#(NSUInteger)#>]
+            }
+        }
+        if (!found) {
+            [_beacons addObject:rangedBeacon];
+        }
     }
     
-    NSArray *nearBeacons = [beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityNear]];
-    if([nearBeacons count]){
-        [_beacons setObject:nearBeacons forKey:[NSNumber numberWithInt:CLProximityNear]];
-        
-    }
-    
-    NSArray *farBeacons = [beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityFar]];
-    if([farBeacons count]) {
-        [_beacons setObject:farBeacons forKey:[NSNumber numberWithInt:CLProximityFar]];
-        self.welcomeLabel.text = self.originalWelcomeText;
-        self.claimBeaconButton.hidden = YES;
-
-    }
-    
+    [self.tableView reloadData];
 }
 
 
