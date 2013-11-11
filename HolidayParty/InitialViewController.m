@@ -84,6 +84,24 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                          }];
 
     
+    [center addObserverForName:@"BarScoreUpdateFailed" object:nil
+                         queue:mainQueue usingBlock:^(NSNotification *note) {
+                             
+                             NSLog(@"BarScore Update Failed");
+                             
+                             [TSMessage showNotificationInViewController:self
+                                                                   title:NSLocalizedString(@"BarScoreUpdate Failed!", nil)
+                                                                subtitle:NSLocalizedString(@"Check your network connection", nil)
+                                                                    type:TSMessageNotificationTypeError
+                                                                duration:TSMessageNotificationDurationAutomatic
+                                                                callback:nil
+                                                             buttonTitle:nil
+                                                          buttonCallback:nil
+                                                              atPosition:TSMessageNotificationPositionTop
+                                                     canBeDismisedByUser:YES];
+                             
+                         }];
+    
     [super viewDidLoad];
     
 }
@@ -275,7 +293,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                                            callback:nil
                                         buttonTitle:nil
                                      buttonCallback:nil
-                                         atPosition:TSMessageNotificationPositionBottom
+                                         atPosition:TSMessageNotificationPositionTop
                                 canBeDismisedByUser:YES];
         
         [self.navigationController finishSGProgress];
