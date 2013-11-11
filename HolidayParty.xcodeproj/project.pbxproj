@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A9ADA8918316B7700931870 /* BarTender.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A9ADA8718316B7700931870 /* BarTender.m */; };
 		30829217A9D744C782DE9AE0 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A16D6153324D648867CCB1 /* libPods.a */; };
 		896426B91827EBF500F0EB6B /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 896426B71827EBF500F0EB6B /* CoreBluetooth.framework */; };
 		896426BA1827EBF500F0EB6B /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 896426B81827EBF500F0EB6B /* CoreLocation.framework */; };
@@ -45,6 +46,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1A9ADA8718316B7700931870 /* BarTender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarTender.m; sourceTree = "<group>"; };
+		1A9ADA8818316B7700931870 /* BarTender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarTender.h; sourceTree = "<group>"; };
 		8339C346698C442EA6AF1F10 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		896426B71827EBF500F0EB6B /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		896426B81827EBF500F0EB6B /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -153,6 +156,8 @@
 		89E0602618207C0D002CBC39 /* HolidayParty */ = {
 			isa = PBXGroup;
 			children = (
+				1A9ADA8718316B7700931870 /* BarTender.m */,
+				1A9ADA8818316B7700931870 /* BarTender.h */,
 				89E6EDB5182D4A010014F8B9 /* UIImage+Alpha.h */,
 				89E6EDB6182D4A010014F8B9 /* UIImage+Alpha.m */,
 				89E6EDB7182D4A010014F8B9 /* UIImage+Resize.h */,
@@ -346,6 +351,7 @@
 				89E0602D18207C0D002CBC39 /* main.m in Sources */,
 				8987A01618234B470000CB50 /* HttpClient.m in Sources */,
 				89E6EDBC182D4A010014F8B9 /* UIImage+Resize.m in Sources */,
+				1A9ADA8918316B7700931870 /* BarTender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
