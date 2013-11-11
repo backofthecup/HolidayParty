@@ -17,6 +17,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *welcomeLabel;
 @property (strong, nonatomic) IBOutlet UISwitch *rangingSwitch;
 @property (strong, nonatomic) IBOutlet UILabel *beaconsFoundLabel;
+@property (strong, nonatomic) IBOutlet UILabel *barScoreLabel;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)photoButtonTapped:(id)sender;

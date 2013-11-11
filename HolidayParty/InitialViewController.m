@@ -35,6 +35,7 @@
 static NSString * const USER_ID_KEY = @"userId";
 static NSString * const USER_NAME_KEY = @"userName";
 static NSString * const USER_IMAGE_FILE = @"user_image.png";
+static NSString * const BAR_SCORE_KEY = @"barScore";
 
 @implementation InitialViewController
 
@@ -59,6 +60,29 @@ static NSString * const USER_IMAGE_FILE = @"user_image.png";
         // load the user's photo
         [self loadUserImage];
     }
+    
+    //set the bar score from the defaults
+    NSInteger barScore = [[NSUserDefaults standardUserDefaults] integerForKey:BAR_SCORE_KEY];
+    self.barScoreLabel.text = [NSString stringWithFormat:@"%li", (long)barScore];
+    
+    //CM called from the barTender instance
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [center addObserverForName:@"BarScoreUpdate" object:nil
+                         queue:mainQueue usingBlock:^(NSNotification *note) {
+                             
+                             NSLog(@"BarScore Update notification handled");
+                             
+                             NSDictionary *userInfo = note.userInfo;
+                             NSNumber *barScoreData = [userInfo objectForKey:@"barScore"];
+                             
+                             self.barScoreLabel.text = [NSString stringWithFormat:@"%@", barScoreData];
+                             
+                             NSLog(@"BarScore Update notification handled %@", barScoreData);
+                             
+                             
+                         }];
+
     
     [super viewDidLoad];
     

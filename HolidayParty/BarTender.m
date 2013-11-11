@@ -244,6 +244,8 @@ static NSString * const USER_ID = @"userId";
 
 - (BOOL) updateBarScore
 {
+ 
+    if (_needsBarScoreUpdate == NO) return FALSE;
     
     HttpClient *client = [HttpClient sharedClient];
 
