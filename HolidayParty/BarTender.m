@@ -260,7 +260,7 @@ static NSString * const USER_ID = @"userId";
     
     //barScoreValue = barScoreValue + 1;
     
-    NSString *updateUrl = [NSString stringWithFormat:@"increment_bar_score/%d", userId];
+    NSString *updateUrl = [NSString stringWithFormat:@"increment_bar_score/%li", (long)userId];
     
     NSLog(@"Update Url is %@", updateUrl);
     
