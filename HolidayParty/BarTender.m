@@ -200,7 +200,7 @@ static NSString * const USER_ID = @"userId";
 
 - (BOOL) startUpdateTimer {
     
-    self.barUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(updateBarScore) userInfo:nil repeats:YES];
+    self.barUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(updateBarScoreInBackground) userInfo:nil repeats:YES];
     
     return TRUE;
 }
@@ -219,7 +219,8 @@ static NSString * const USER_ID = @"userId";
     // we're using background tasks because normally there is only 5 seconds to do something when transitioning to
     // a background state.  A server update may take longer.
     
-    UIBackgroundTaskIdentifier bgTask = UIBackgroundTaskInvalid;;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+    UIBackgroundTaskIdentifier bgTask = UIBackgroundTaskInvalid;
     
     bgTask = [[UIApplication sharedApplication]
               beginBackgroundTaskWithExpirationHandler:^{
@@ -237,6 +238,7 @@ static NSString * const USER_ID = @"userId";
         bgTask = UIBackgroundTaskInvalid;
     }
 
+    });
 
     return TRUE;
     
@@ -245,7 +247,7 @@ static NSString * const USER_ID = @"userId";
 - (BOOL) updateBarScore
 {
  
-    if (_needsBarScoreUpdate == NO) return FALSE;
+  //  if (_needsBarScoreUpdate == NO) return FALSE;
     
     HttpClient *client = [HttpClient sharedClient];
 
@@ -280,14 +282,15 @@ static NSString * const USER_ID = @"userId";
             NSDictionary *barScoreData = [NSDictionary dictionaryWithObject:barScore
                                                                  forKey:@"barScore"];
         
-        
+            //kick this back to the main UI thread
+            dispatch_async(dispatch_get_main_queue(), ^(void){
             //send an update to whoever's listening
             [[NSNotificationCenter defaultCenter] postNotificationName:@"BarScoreUpdate"
                                                                 object:nil
                                                               userInfo:barScoreData];
         
 
-        
+        });
             _needsBarScoreUpdate = NO;
         
         
@@ -296,7 +299,11 @@ static NSString * const USER_ID = @"userId";
         NSLog(@"error %@", error.localizedDescription);
         
         _needsBarScoreUpdate = NO;
+        
+        //kick this back to the main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:@"BarScoreUpdateFailed" object:nil];
+        });
         
         NSDictionary *userInfo = error.userInfo;
         [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
