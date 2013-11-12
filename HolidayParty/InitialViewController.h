@@ -19,9 +19,15 @@
 @property (strong, nonatomic) IBOutlet UILabel *beaconsFoundLabel;
 @property (strong, nonatomic) IBOutlet UILabel *barScoreLabel;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UIImageView *image1;
+@property (strong, nonatomic) IBOutlet UIImageView *image2;
+@property (strong, nonatomic) IBOutlet UIImageView *image3;
+@property (strong, nonatomic) IBOutlet UIImageView *image4;
+@property (strong, nonatomic) IBOutlet UIImageView *image5;
+@property (strong, nonatomic) IBOutlet UIImageView *image6;
 
 - (IBAction)photoButtonTapped:(id)sender;
-- (IBAction)userButtonTapped:(id)sender;
 - (IBAction)rangingSwitchChanged:(id)sender;
+- (IBAction)userButtonTapped:(id)sender;
 
 @end

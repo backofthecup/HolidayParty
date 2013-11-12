@@ -55,7 +55,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     NSString *user = [[NSUserDefaults standardUserDefaults] valueForKey:USER_NAME_KEY];
     if (user) {
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
-        self.userButton.hidden = NO;
 
         // load the user's photo
         [self loadUserImage];
@@ -182,17 +181,12 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 
-- (IBAction)userButtonTapped:(id)sender {
-    [self promptForRegistration];
-}
 
 - (IBAction)startOverTapped:(id)sender {
     [[NSUserDefaults standardUserDefaults] setValue:nil forKey:USER_NAME_KEY];
     [[NSUserDefaults standardUserDefaults] setValue:nil forKey:USER_ID_KEY];
     
     [[NSUserDefaults standardUserDefaults] synchronize];
-    
-    self.userButton.hidden = YES;
     
     NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *docsDir = dirPaths[0];
@@ -223,6 +217,10 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     
 }
 
+- (IBAction)userButtonTapped:(id)sender {
+    [self promptForRegistration];
+}
+
 #pragma mark - private methods
 - (void)promptForRegistration {
     NSString *userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"userName"];
@@ -232,7 +230,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         // overwriting previous user, allow for Cancel
         cancelButtonTitle = @"Cancel";
     }
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ObjectLab Holiday Party" message:@"Welcome to the ObjectLab Holiday Party. Please register by entering your name (You can change this at anytime):" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"Register", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ObjectLab Holiday Party" message:@"Welcome to the ObjectLab Holiday Party. Please register by entering your name (You can change this at anytime):" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"OK", nil];
     alert.alertViewStyle = UIAlertViewStylePlainTextInput;
     UITextField *text = [alert textFieldAtIndex:0];
     text.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -260,8 +258,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         NSInteger userId = [attributes[@"userId"] integerValue];
         NSLog(@"User id from    response %li", (long)userId);
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
-        
-        self.userButton.hidden = NO;
         
         [TSMessage showNotificationInViewController:self
                                               title:@"Yeah!"
@@ -349,8 +345,8 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         [self.photoButton setTitle:@"" forState:UIControlStateNormal];
     }
     else {
-        [self.photoButton setBackgroundImage:nil forState:UIControlStateNormal];
-        [self.photoButton setTitle:@"Tap for Photo" forState:UIControlStateNormal];
+//        [self.photoButton setBackgroundImage:nil forState:UIControlStateNormal];
+//        [self.photoButton setTitle:@"Tap for Photo" forState:UIControlStateNormal];
     }
    
 }
@@ -393,6 +389,14 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     NSLog(@"...starting to range.....");
     self.welcomeLabel.hidden = YES;
     self.tableView.hidden = NO;
+    
+    self.image1.hidden = YES;
+    self.image2.hidden = YES;
+    self.image3.hidden = YES;
+    self.image4.hidden = YES;
+    self.image5.hidden = YES;
+    self.image6.hidden = YES;
+    
     
 //    _beacons = [NSMutableArray array];
     
