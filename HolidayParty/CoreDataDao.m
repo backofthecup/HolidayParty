@@ -7,6 +7,7 @@
 //
 
 #import "CoreDataDao.h"
+#import "Beacon.h"
 
 @interface CoreDataDao ()
 
@@ -48,7 +49,7 @@
  */
 - (NSManagedObjectContext *) managedObjectContext {
     if (_managedObjectContext != nil) {
-        return self.managedObjectContext;
+        return _managedObjectContext;
     }
 	
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
@@ -156,18 +157,82 @@
 	[self.managedObjectContext rollback];
 }
 
-
-
-- (NSArray *)executeFetchRequest:(NSFetchRequest *)request {
-	NSError *error = nil;
-	NSArray *list = [self.managedObjectContext executeFetchRequest:request error:&error];
-	if (error) {
-		NSLog(@"........Core Data error occurred %@", [error localizedDescription]);
-	}
+- (NSArray *)beacons {
+    NSEntityDescription *desc = [NSEntityDescription entityForName:@"Beacon" inManagedObjectContext:self.managedObjectContext];
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
+	[request setEntity:desc];
 	
-	return list;
+	// sort by start date
+	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"tableIndex" ascending:NO];
+	[request setSortDescriptors:@[sortDescriptor]];
+    
+    NSError *error = nil;
+    NSArray *beacons = [_managedObjectContext executeFetchRequest:request error:&error];
+	if (error) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+	    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+	    abort();
+	}
+    
+
+    return beacons;
 }
 
+
+- (void)seedDatabase {
+    NSLog(@"..seeding the db....");
+    Beacon *beacon1 = [self createManagedObject:@"Beacon"];
+    beacon1.tableIndex = [NSNumber numberWithInt:0];
+    beacon1.major = [NSNumber numberWithInt:1];
+    beacon1.claimed = [NSNumber numberWithBool:NO];
+    beacon1.ack = [NSNumber numberWithBool:NO];
+    beacon1.imageClaimed = @"arjian_green";
+    beacon1.imageUnclaimed = @"arjian_blue";
+    
+    Beacon *beacon2 = [self createManagedObject:@"Beacon"];
+    beacon2.tableIndex = [NSNumber numberWithInt:1];
+    beacon2.major = [NSNumber numberWithInt:2];
+    beacon2.claimed = [NSNumber numberWithBool:NO];
+    beacon2.ack = [NSNumber numberWithBool:NO];
+    beacon2.imageClaimed = @"noobi_green";
+    beacon2.imageUnclaimed = @"noobi_blue";
+
+    Beacon *beacon3 = [self createManagedObject:@"Beacon"];
+    beacon3.tableIndex = [NSNumber numberWithInt:2];
+    beacon3.major = [NSNumber numberWithInt:3];
+    beacon3.claimed = [NSNumber numberWithBool:NO];
+    beacon3.ack = [NSNumber numberWithBool:NO];
+    beacon3.imageClaimed = @"firewall_green";
+    beacon3.imageUnclaimed = @"firewall_blue";
+
+    Beacon *beacon4 = [self createManagedObject:@"Beacon"];
+    beacon4.tableIndex = [NSNumber numberWithInt:3];
+    beacon4.major = [NSNumber numberWithInt:4];
+    beacon4.claimed = [NSNumber numberWithBool:NO];
+    beacon4.ack = [NSNumber numberWithBool:NO];
+    beacon4.imageClaimed = @"iso_green";
+    beacon4.imageUnclaimed = @"iso_blue";
+
+    Beacon *beacon5 = [self createManagedObject:@"Beacon"];
+    beacon5.tableIndex = [NSNumber numberWithInt:4];
+    beacon5.major = [NSNumber numberWithInt:5];
+    beacon5.claimed = [NSNumber numberWithBool:NO];
+    beacon5.ack = [NSNumber numberWithBool:NO];
+    beacon5.imageClaimed = @"program_green";
+    beacon5.imageUnclaimed = @"program_blue";
+
+    Beacon *beacon6 = [self createManagedObject:@"Beacon"];
+    beacon6.tableIndex = [NSNumber numberWithInt:5];
+    beacon6.major = [NSNumber numberWithInt:6];
+    beacon6.claimed = [NSNumber numberWithBool:NO];
+    beacon6.ack = [NSNumber numberWithBool:NO];
+    beacon6.imageClaimed = @"virus_green";
+    beacon6.imageUnclaimed = @"virus_blue";
+
+    [self save];
+    
+}
 
 
 

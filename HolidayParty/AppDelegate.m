@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "BarTender.h"
+#import "CoreDataDao.h"
 
 @implementation AppDelegate
 
@@ -21,7 +22,14 @@
     
     NSUUID *uuid = [[UIDevice currentDevice] identifierForVendor];
     NSLog(@"... UUID %@", [uuid UUIDString]);
+    
+    // seed db id necessary
+    NSArray *beacons = [[CoreDataDao sharedDao] beacons];
+    if ([beacons count] < 1) {
+        [[CoreDataDao sharedDao] seedDatabase];
+    }
     return YES;
+    
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application

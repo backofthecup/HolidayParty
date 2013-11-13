@@ -32,7 +32,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
                                 <state key="normal" backgroundImage="Smiley"/>
-                                <state key="highlighted" backgroundImage="Smiley"/>
                                 <connections>
                                     <action selector="photoButtonTapped:" destination="CZ4-MO-1fc" eventType="touchUpInside" id="vz4-Cm-YwO"/>
                                 </connections>
@@ -70,6 +69,10 @@
                                             <rect key="frame" x="0.0" y="0.0" width="290" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
+                                                <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="Dot" translatesAutoresizingMaskIntoConstraints="NO" id="3cz-xa-Bgb">
+                                                    <rect key="frame" x="250" y="17" width="11" height="11"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </imageView>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eks-Mr-PEh">
                                                     <rect key="frame" x="15" y="0.0" width="260" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
@@ -127,7 +130,6 @@
                         </subviews>
                         <color key="backgroundColor" red="0.14901960784313725" green="0.14901960784313725" blue="0.14901960784313725" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="inI-1M-H4h"/>
                     <navigationItem key="navigationItem" id="Qdd-St-uUE"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
@@ -148,7 +150,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qh2-T1-AhA" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1567" y="-211"/>
+            <point key="canvasLocation" x="2093" y="-211"/>
         </scene>
         <!--Map View Controller - Second-->
         <scene sceneID="ot8-2e-RuS">
@@ -186,15 +188,35 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
-                        <segue destination="CZ4-MO-1fc" kind="relationship" relationship="viewControllers" id="uTY-Sh-svM"/>
+                        <segue destination="3u1-5u-6Zb" kind="relationship" relationship="viewControllers" id="uTY-Sh-svM"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FNP-y4-bzi" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="132" y="180"/>
         </scene>
+        <!--Navigation Controller - Item-->
+        <scene sceneID="gFU-H3-QP5">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="3u1-5u-6Zb" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="inI-1M-H4h"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" hidden="YES" contentMode="scaleToFill" barStyle="black" id="hIE-Wd-oFF">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="CZ4-MO-1fc" kind="relationship" relationship="rootViewController" id="v0f-3S-Zv7"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lii-Mr-mL1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1567" y="-211"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="Dot" width="11" height="11"/>
         <image name="Smiley" width="125" height="125"/>
         <image name="arjian_blue" width="45" height="45"/>
         <image name="firewall_blue" width="45" height="45"/>

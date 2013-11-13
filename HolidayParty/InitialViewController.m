@@ -10,21 +10,22 @@
 #import "HttpClient.h"
 #import "TSMessageView.h"
 #import "UIImage+Resize.h"
+#import "Beacon.h"
+#import "CoreDataDao.h"
 
 @interface InitialViewController ()
 
 @property (nonatomic, strong) CLBeaconRegion *beaconRegion;
 @property (nonatomic, strong) CLLocationManager *locationManager;
-//@property (nonatomic, strong) NSMutableArray *beacons;
+@property (nonatomic, strong) NSArray *beacons;
 @property (nonatomic, strong) NSMutableArray *rangedBeacons;
-@property (nonatomic, strong) NSMutableArray *claimedBeacons;
-
 @property (nonatomic, strong) NSString *originalWelcomeText;
 
 - (void)promptForRegistration;
 - (void)registerUser:(NSString *)user;
 - (void)updateUsername:(NSString *)username;
 - (void)uploadUserImage:(NSString *)imagePath;
+- (void)claimBeacon:(Beacon *)beacon;
 
 - (void)loadUserImage;
 - (void)startRanging;
@@ -48,8 +49,9 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                                                   forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = [UIImage new];
     self.navigationController.navigationBar.translucent = YES;
+
+    _beacons = [[CoreDataDao sharedDao] beacons];
     
-    _claimedBeacons = [NSMutableArray array];
     _rangedBeacons = [NSMutableArray array];
     
     NSString *user = [[NSUserDefaults standardUserDefaults] valueForKey:USER_NAME_KEY];
@@ -131,80 +133,68 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 6;
+    return [_beacons count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     float y = 17.0;
+    float width = 11.0;
+    float heigth = 11.0;
+    float maxX = 250;
     
-    switch (indexPath.row) {
-        case 0: {
-            cell.imageView.image = [UIImage imageNamed:@"arjian_blue"];
+    NSArray *beacons = [_beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tableIndex = %i", indexPath.row]];
 
-            // dot represents distance to beacon
-            UIImage *dot = [UIImage imageNamed:@"Dot"];
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
-            imageView.frame = CGRectMake(72 + 20, y, 11, 11);
-            [cell.contentView addSubview:imageView];
+    // dot will indicate proximity to beacon
+    UIImageView *dotImage = (UIImageView *)[cell.contentView viewWithTag:100];
 
-            break;
-        }
-            
-        case 1: {
-            cell.imageView.image = [UIImage imageNamed:@"noobi_blue"];
-            
-            // dot represents distance to beacon
-            UIImage *dot = [UIImage imageNamed:@"Dot"];
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
-            imageView.frame = CGRectMake(72 + 100, y, 11, 11);
-            [cell.contentView addSubview:imageView];
-
-            break;
-        }
-        case 2: {
-            cell.imageView.image = [UIImage imageNamed:@"firewall_blue"];
-
-            // dot represents distance to beacon
-            UIImage *dot = [UIImage imageNamed:@"Dot"];
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
-            imageView.frame = CGRectMake(72 + 40, 17, 11, 11);
-            [cell.contentView addSubview:imageView];
-break;
-        }
-        case 3: {
-            cell.imageView.image = [UIImage imageNamed:@"iso_blue"];
-            
-            // dot represents distance to beacon
-            UIImage *dot = [UIImage imageNamed:@"Dot"];
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
-            imageView.frame = CGRectMake(72 + 100, y, 11, 11);
-            [cell.contentView addSubview:imageView];
-
-            break;
-        }
-        case 4: {
-            
-            cell.imageView.image = [UIImage imageNamed:@"program_blue"];
-            // dot represents distance to beacon
-            UIImage *dot = [UIImage imageNamed:@"Dot"];
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
-            imageView.frame = CGRectMake(72 + 130, y, 11, 11);
-            [cell.contentView addSubview:imageView];
-
-            break;
-        }
-        case 5: {
+    if([beacons count]) {
+        Beacon *beacon = beacons[0];
+        if ([beacon.claimed boolValue]) {
+            // beacon is claimed
+            cell.imageView.image = [UIImage imageNamed:beacon.imageClaimed];
             cell.textLabel.text = @"Claimed!";
-            cell.imageView.image = [UIImage imageNamed:@"virus_green"];
-            break;
+            
+            // hide the dot
+            [dotImage setHidden:YES];
         }
-        default:
-            cell.imageView.image = [UIImage imageNamed:@"firewall_blue"];
+        else {
+            // beacon is unclaimed
 
-            break;
+            // look for this beacon in the ranged beacon array
+            NSArray *rangedBeacons = [_rangedBeacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"major = %i", [beacon.major intValue]]];
+            if ([rangedBeacons count]) {
+                CLBeacon *rangedBeacon = rangedBeacons[0];
+                NSLog(@"...beacon range is %1.2f", rangedBeacon.accuracy);
+                // postion range is 72 to 250, cap at 50 meters
+                float x = 72 + (rangedBeacon.accuracy * 4.0);
+                if (x > maxX) {
+                    x = maxX;
+                }
+                if ((rangedBeacon.accuracy >= 0.0) && (rangedBeacon.accuracy <= 2.0)) {
+                    // user is very close to beacon allow to claim
+                    dotImage.frame = CGRectMake(x, y, width, heigth);
+                    cell.textLabel.text = @"Tap to Claim";
+                    cell.imageView.image = [UIImage imageNamed:beacon.imageClaimed];
+                }
+                else if (rangedBeacon.accuracy > 2.0) {
+                    // user is not close enough to claim beacon
+                    dotImage.frame = CGRectMake(x, y, width, heigth);
+                    cell.textLabel.text = @"";
+                    cell.imageView.image = [UIImage imageNamed:beacon.imageUnclaimed];
+                }
+                
+            }
+            else {
+                // beacon was not found, set to max
+                dotImage.frame = CGRectMake(maxX, y, width, heigth);
+                cell.textLabel.text = @"";
+                cell.imageView.image = [UIImage imageNamed:beacon.imageUnclaimed];
+            }
+        }
     }
+
     
     return cell;
     
@@ -214,35 +204,18 @@ break;
     // claim the beacon
     NSLog(@"didselect row....");
     
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.textLabel.text = @"Claimed!";
-    UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
-    [imageView setHidden:YES];
+    NSArray *beacons = [_beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"tableIndex = %i", indexPath.row]];
 
-    switch (indexPath.row) {
-        case 0:
-            cell.imageView.image = [UIImage imageNamed:@"arjian_green"];
-            break;
-        case 2:
-            cell.imageView.image = [UIImage imageNamed:@"firewall_green"];
-            break;
-        case 1:
-            cell.imageView.image = [UIImage imageNamed:@"noobi_green"];
-            break;
-        case 3:
-            cell.imageView.image = [UIImage imageNamed:@"iso_green"];
-            break;
-        case 4:
-            cell.imageView.image = [UIImage imageNamed:@"program_green"];
-            break;
-        case 5:
-            cell.imageView.image = [UIImage imageNamed:@"virus_green"];
-            break;
-        default:
-            cell.imageView.image = [UIImage imageNamed:@"firewall_blue"];
+    // claim beacon
+    if ([beacons count]) {
+        Beacon *beacon = beacons[0];
+        if (![beacon.claimed boolValue]) {
+            beacon.claimed = [NSNumber numberWithBool:YES];
             
-            break;
+            [tableView reloadData];
+        }
     }
+
 }
 
 #pragma mark - IBAction messages
@@ -303,6 +276,14 @@ break;
 }
 
 #pragma mark - private methods
+- (void)claimBeacon:(Beacon *)beacon {
+    HttpClient *client = [HttpClient sharedClient];
+    
+    
+    
+    
+}
+
 - (void)promptForRegistration {
     NSString *userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"userName"];
 
@@ -387,7 +368,7 @@ break;
     HttpClient *client = [HttpClient sharedClient];
     
     NSInteger userId = [[NSUserDefaults standardUserDefaults] integerForKey:USER_ID_KEY];
-    NSString *suserId = [NSString stringWithFormat:@"%i", userId];
+    NSString *suserId = [NSString stringWithFormat:@"%li", (long)userId];
 
     NSDictionary *params = @{@"user_id": suserId, @"name" : username};
     
@@ -478,7 +459,6 @@ break;
     self.image5.hidden = YES;
     self.image6.hidden = YES;
     
-//    _beacons = [NSMutableArray array];
     
     // This location manager will be used to demonstrate how to range beacons.
     _locationManager = [[CLLocationManager alloc] init];
@@ -542,21 +522,11 @@ break;
     
     NSData *data = [NSData dataWithData:UIImagePNGRepresentation(newImage)];
     
-    
-    // orientation face up
-//    CGImageRef cgRef = image.CGImage;
-//    image = [[UIImage alloc] initWithCGImage:cgRef scale:1.0 orientation:UIImageOrientationUp];
-//    
-//    // put in data
-//    data = [NSData dataWithData:UIImagePNGRepresentation(image)];
-    
     NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *docsDir = dirPaths[0];
     
     // write the image to disk
     NSString *imagePath = [docsDir stringByAppendingPathComponent:USER_IMAGE_FILE];
-   // [data writeToFile:imagePath atomically:YES];
-
     [data writeToFile:imagePath atomically:YES];
     
     [self loadUserImage];
@@ -570,7 +540,7 @@ break;
 #pragma mark - CLLocationManagerDelegate 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region
 {
-    NSLog(@"...locationManager didRangeBeacons....%i", [beacons count]);
+    NSLog(@"...locationManager didRangeBeacons....%lu", (unsigned long)[beacons count]);
     
 
     _rangedBeacons.array = beacons;
@@ -580,10 +550,8 @@ break;
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     
-//    NSString *text = [textField.text stringByReplacingCharactersInRange:range withString:string];
     BOOL allow = !((textField.text.length >= 11) && range.length == 0);
 
-    
     return allow;
 }
 

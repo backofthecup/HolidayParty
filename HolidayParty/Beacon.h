@@ -16,5 +16,8 @@
 @property (nonatomic, retain) NSNumber * tableIndex;
 @property (nonatomic, retain) NSNumber * claimed;
 @property (nonatomic, retain) NSNumber * ack;
+@property (nonatomic, retain) NSString * imageClaimed;
+@property (nonatomic, retain) NSString * imageUnclaimed;
+
 
 @end

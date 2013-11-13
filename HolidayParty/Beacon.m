@@ -15,5 +15,7 @@
 @dynamic tableIndex;
 @dynamic claimed;
 @dynamic ack;
+@dynamic imageClaimed;
+@dynamic imageUnclaimed;
 
 @end

@@ -24,4 +24,9 @@
 
 - (void)rollback;
 
+- (NSArray *)beacons;
+
+- (void)seedDatabase;
+
+
 @end

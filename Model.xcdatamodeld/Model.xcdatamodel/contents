@@ -3,10 +3,12 @@
     <entity name="Beacon" representedClassName="Beacon" syncable="YES">
         <attribute name="ack" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="claimed" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="imageClaimed" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="imageUnclaimed" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="major" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="tableIndex" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Beacon" positionX="160" positionY="192" width="128" height="103"/>
+        <element name="Beacon" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>
