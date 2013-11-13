@@ -131,22 +131,81 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [_rangedBeacons count];
+    return 6;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    CLBeacon *beacon = _rangedBeacons[indexPath.row];
-    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    if ([_claimedBeacons containsObject:beacon]) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        cell.textLabel.text = [NSString stringWithFormat:@"Beacon %i claimed!", beacon.major.intValue];
-        
-}
-    else {
-        cell.textLabel.text = [NSString stringWithFormat:@"Beacon %i %1.2f meters", beacon.major.intValue, beacon.accuracy];
+    float y = 17.0;
+    
+    switch (indexPath.row) {
+        case 0: {
+            cell.imageView.image = [UIImage imageNamed:@"arjian_blue"];
+
+            // dot represents distance to beacon
+            UIImage *dot = [UIImage imageNamed:@"Dot"];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
+            imageView.frame = CGRectMake(72 + 20, y, 11, 11);
+            [cell.contentView addSubview:imageView];
+
+            break;
+        }
+            
+        case 1: {
+            cell.imageView.image = [UIImage imageNamed:@"noobi_blue"];
+            
+            // dot represents distance to beacon
+            UIImage *dot = [UIImage imageNamed:@"Dot"];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
+            imageView.frame = CGRectMake(72 + 100, y, 11, 11);
+            [cell.contentView addSubview:imageView];
+
+            break;
+        }
+        case 2: {
+            cell.imageView.image = [UIImage imageNamed:@"firewall_blue"];
+
+            // dot represents distance to beacon
+            UIImage *dot = [UIImage imageNamed:@"Dot"];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
+            imageView.frame = CGRectMake(72 + 40, 17, 11, 11);
+            [cell.contentView addSubview:imageView];
+break;
+        }
+        case 3: {
+            cell.imageView.image = [UIImage imageNamed:@"iso_blue"];
+            
+            // dot represents distance to beacon
+            UIImage *dot = [UIImage imageNamed:@"Dot"];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
+            imageView.frame = CGRectMake(72 + 100, y, 11, 11);
+            [cell.contentView addSubview:imageView];
+
+            break;
+        }
+        case 4: {
+            
+            cell.imageView.image = [UIImage imageNamed:@"program_blue"];
+            // dot represents distance to beacon
+            UIImage *dot = [UIImage imageNamed:@"Dot"];
+            UIImageView *imageView = [[UIImageView alloc] initWithImage:dot];
+            imageView.frame = CGRectMake(72 + 130, y, 11, 11);
+            [cell.contentView addSubview:imageView];
+
+            break;
+        }
+        case 5: {
+            cell.textLabel.text = @"Claimed!";
+            cell.imageView.image = [UIImage imageNamed:@"virus_green"];
+            break;
+        }
+        default:
+            cell.imageView.image = [UIImage imageNamed:@"firewall_blue"];
+
+            break;
     }
+    
     return cell;
     
 }
@@ -154,14 +213,36 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // claim the beacon
     NSLog(@"didselect row....");
-    CLBeacon *beacon = _rangedBeacons[indexPath.row];
-    if ([_claimedBeacons containsObject:beacon]) {
-        // ignore
+    
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.textLabel.text = @"Claimed!";
+    UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
+    [imageView setHidden:YES];
+
+    switch (indexPath.row) {
+        case 0:
+            cell.imageView.image = [UIImage imageNamed:@"arjian_green"];
+            break;
+        case 2:
+            cell.imageView.image = [UIImage imageNamed:@"firewall_green"];
+            break;
+        case 1:
+            cell.imageView.image = [UIImage imageNamed:@"noobi_green"];
+            break;
+        case 3:
+            cell.imageView.image = [UIImage imageNamed:@"iso_green"];
+            break;
+        case 4:
+            cell.imageView.image = [UIImage imageNamed:@"program_green"];
+            break;
+        case 5:
+            cell.imageView.image = [UIImage imageNamed:@"virus_green"];
+            break;
+        default:
+            cell.imageView.image = [UIImage imageNamed:@"firewall_blue"];
+            
+            break;
     }
-    else {
-        [_claimedBeacons addObject:beacon];
-    }
-    NSLog(@"claimed beacon coundt %i", [_claimedBeacons count]);
 }
 
 #pragma mark - IBAction messages
@@ -230,7 +311,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         // overwriting previous user, allow for Cancel
         cancelButtonTitle = @"Cancel";
     }
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ObjectLab Holiday Party" message:@"Welcome to the ObjectLab Holiday Party. Please register by entering your name (You can change this at anytime):" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"OK", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ObjectLab Holiday Party" message:@"Welcome to the party. Please enter your name (You can change this at anytime):" delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"OK", nil];
     alert.alertViewStyle = UIAlertViewStylePlainTextInput;
     UITextField *text = [alert textFieldAtIndex:0];
     text.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -397,7 +478,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     self.image5.hidden = YES;
     self.image6.hidden = YES;
     
-    
 //    _beacons = [NSMutableArray array];
     
     // This location manager will be used to demonstrate how to range beacons.
@@ -439,8 +519,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         // register user
         [self registerUser:user];
     }
-
-    
 }
 
 - (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView {
@@ -500,5 +578,13 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     [self.tableView reloadData];
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    
+//    NSString *text = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    BOOL allow = !((textField.text.length >= 11) && range.length == 0);
+
+    
+    return allow;
+}
 
 @end
