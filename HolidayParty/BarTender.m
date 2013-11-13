@@ -146,8 +146,6 @@ static NSString * const USER_ID = @"userId";
 - (BOOL) checkForBarProximity:(NSArray*)barBeacons
 {
     
-    //this could get called from InitialViewController during app foreground checks, or when application wakes up
-    
     NSLog(@"Checking for barscore update.. check proximity to bar beacons");
     
     /* there should be two here.. 
@@ -251,19 +249,12 @@ static NSString * const USER_ID = @"userId";
     if (_needsBarScoreUpdate == NO) return FALSE;
     
     HttpClient *client = [HttpClient sharedClient];
-
     NSInteger userId = [[NSUserDefaults standardUserDefaults] integerForKey:USER_ID];
     
     //if user id == 0, they haven't registered yet
     if (userId == 0 ) { return FALSE; }
     
-   // NSLog(@"Bar score is %ld ", (long)barScoreValue);
-    
-    //barScoreValue = barScoreValue + 1;
-    
     NSString *updateUrl = [NSString stringWithFormat:@"increment_bar_score/%li", (long)userId];
-    
-    NSLog(@"Update Url is %@", updateUrl);
     
     [client GET:updateUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"bar score update successfull %@", responseObject);
