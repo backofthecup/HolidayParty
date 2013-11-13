@@ -78,6 +78,7 @@ static NSString * const USER_ID = @"userId";
         {
             NSLog(@"application in background");            //notification.alertBody = @"You're inside the region";
             
+            //range beacons for 10 seconds.. 
             [manager startRangingBeaconsInRegion:(CLBeaconRegion*)region];
             
         }
@@ -126,13 +127,13 @@ static NSString * const USER_ID = @"userId";
     NSUUID *proximityId =_defaultProximityUUID;
     NSString *regionID =_defaultRegionId;
     
-    CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:proximityId identifier:regionID];
+    _barRegion = [[CLBeaconRegion alloc] initWithProximityUUID:proximityId identifier:regionID];
     
-    region.notifyOnEntry = YES;
-    region.notifyOnExit = YES;
-    region.notifyEntryStateOnDisplay = YES;
+    _barRegion.notifyOnEntry = YES;
+    _barRegion.notifyOnExit = YES;
+    _barRegion.notifyEntryStateOnDisplay = YES;
     
-    [_locationManager startMonitoringForRegion:region];
+    [_locationManager startMonitoringForRegion:_barRegion];
     
     return TRUE;
 }
