@@ -23,8 +23,8 @@ static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) NSArray *beacons;
 @property (nonatomic, strong) NSMutableArray *rangedBeacons;
-@property (nonatomic, strong) NSString *originalWelcomeText;
-@property (nonatomic, assign) BOOL bleAvailable;
+@property (nonatomic, assign) BOOL isBluetoothOn;
+@property (nonatomic, strong) UIAlertView *bluetoothAlertView;
 
 - (void)promptForRegistration;
 - (void)registerUser:(NSString *)user;
@@ -50,14 +50,18 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 {
     
     [super viewDidLoad];
-
-    _originalWelcomeText = self.welcomeLabel.text;
     
+    _bluetoothAlertView = [[UIAlertView alloc] initWithTitle:nil message:@"This app requires bluetooth to be enabled." delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Settings", nil];
+
+
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
                                                   forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = [UIImage new];
     self.navigationController.navigationBar.translucent = YES;
 
+    // put a border around the play button
+    [self.playButton.layer setBorderColor:[UIColor colorWithRed:209 green:238 blue:255 alpha:1.0].CGColor];
+    [self.playButton.layer setBorderWidth:1.0f];
     // get the persistent beacons
     _beacons = [[CoreDataDao sharedDao] beacons];
     
@@ -67,11 +71,17 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     if (user) {
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
 
+        self.slideToBeginLabel.hidden = NO;
+        self.playButton.hidden = NO;
         NSNumber *barScore = [[NSUserDefaults standardUserDefaults] valueForKey:BAR_SCORE_KEY];
         self.barScoreLabel.text = [barScore stringValue];
         
         // load the user's photo
         [self loadUserImage];
+    }
+    else {
+        self.slideToBeginLabel.hidden = YES;
+        self.playButton.hidden = YES;
     }
     
     //set the bar score from the defaults
@@ -127,13 +137,12 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         NSLog(@"btStateString is %@", btStateString);
         
         if ([btStatus boolValue]) {
-            self.rangingSwitch.enabled = YES;
+            self.isBluetoothOn = YES;
         }
         else {
             // bluetooth not on
-            [[[UIAlertView alloc] initWithTitle:nil message:@"This app requires bluetooth to be enabled." delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Settings", nil] show];
-            
-            self.rangingSwitch.enabled = NO;
+            [_bluetoothAlertView show];
+            self.isBluetoothOn = NO;
             [self stopRanging];
         }
         
@@ -296,14 +305,13 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     controller.delegate = self;
     
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//        controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
         controller.sourceType = UIImagePickerControllerSourceTypeCamera;
+        controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
     }
     
     [self presentViewController:controller animated:YES completion:nil];
     
     NSLog(@"this is a change");
-    NSLog(@"this is another change");
 }
 
 
@@ -335,7 +343,14 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 
 - (IBAction)rangingSwitchChanged:(id)sender {
     if (_rangingSwitch.on) {
-        [self startRanging];
+        if (self.isBluetoothOn) {
+            [self startRanging];
+        }
+        else {
+            // bluetooth not on
+            [_bluetoothAlertView show];
+            _rangingSwitch.on = NO;
+        }
     }
     else {
         [self stopRanging];
@@ -345,6 +360,17 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 
 - (IBAction)userButtonTapped:(id)sender {
     [self promptForRegistration];
+}
+
+- (IBAction)playButtonTapped:(id)sender {
+    if (self.isBluetoothOn) {
+        [self startRanging];
+    }
+    else {
+        // bluetooth not on
+        [_bluetoothAlertView show];
+    }
+    
 }
 
 #pragma mark - private methods
@@ -376,9 +402,9 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 - (void)promptForRegistration {
-    if (![HttpClient sharedClient].reachabilityManager.reachable) {
-        return;
-    }
+//    if (![HttpClient sharedClient].reachabilityManager.reachable) {
+//        return;
+//    }
     NSString *userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"userName"];
 
     NSString *cancelButtonTitle = nil;
@@ -415,6 +441,10 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         NSInteger userId = [attributes[@"userId"] integerValue];
         NSLog(@"User id from    response %li", (long)userId);
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
+        
+        self.rangingSwitch.hidden = NO;
+        self.slideToBeginLabel.hidden = NO;
+        self.playButton.hidden = NO;
         
         [TSMessage showNotificationInViewController:self
                                               title:@"Yeah!"
@@ -545,6 +575,8 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 - (void)startRanging {
     NSLog(@"...starting to range.....");
     self.welcomeLabel.hidden = YES;
+    self.slideToBeginLabel.hidden = YES;
+    self.playButton.hidden = YES;
     self.tableView.hidden = NO;
     
     self.image1.hidden = YES;
@@ -571,11 +603,22 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 
 - (void)stopRanging {
     NSLog(@"..stopping ranging.....");
+    self.rangingSwitch.on = NO;
     [_locationManager stopRangingBeaconsInRegion:_beaconRegion];
 
     [_locationManager stopRangingBeaconsInRegion:[[BarTender sharedInstance] barRegion] ];
 
     self.welcomeLabel.hidden = NO;
+    self.slideToBeginLabel.hidden = NO;
+    self.playButton.hidden = NO;
+    self.image1.hidden = NO;
+    self.image2.hidden = NO;
+    self.image3.hidden = NO;
+    self.image4.hidden = NO;
+    self.image5.hidden = NO;
+    self.image6.hidden = NO;
+
+    
     self.tableView.hidden = YES;
 }
 
@@ -650,11 +693,12 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         //return out of this if it's the bar UUID
         return;
     }
+    else {
+        // claimable beacons
+        _rangedBeacons.array = beacons;
+        [self.tableView reloadData];
+    }
     
-
-    _rangedBeacons.array = beacons;
-    
-    [self.tableView reloadData];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
