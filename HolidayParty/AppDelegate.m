@@ -16,8 +16,8 @@
 {
     // Override point for customization after application launch.
     
-    //start the bar beacon region monitoring
-    [[BarTender sharedInstance] startMonitoring];
+//    //start the bar beacon region monitoring
+//    [[BarTender sharedInstance] startMonitoring];
 
     
     NSUUID *uuid = [[UIDevice currentDevice] identifierForVendor];

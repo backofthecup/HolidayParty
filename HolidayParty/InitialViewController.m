@@ -107,8 +107,23 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                              
                          }];
     
-    [super viewDidLoad];
+//    [center addObserverForName:@"BluetoothUnavailable" object:nil queue:mainQueue usingBlock:^(NSNotification *note) {
+//     
+//        [TSMessage showNotificationInViewController:self
+//                                              title:NSLocalizedString(@"Bluetooth Unavailable", nil)
+//                                           subtitle:NSLocalizedString(@"If you want to play, go to Settings and turn it on.", nil)
+//                                               type:TSMessageNotificationTypeError
+//                                           duration:TSMessageNotificationDurationAutomatic
+//                                           callback:nil
+//                                        buttonTitle:nil
+//                                     buttonCallback:nil
+//                                         atPosition:TSMessageNotificationPositionTop
+//                                canBeDismisedByUser:YES];
+//    }];
     
+
+    [super viewDidLoad];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {

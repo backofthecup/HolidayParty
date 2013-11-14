@@ -26,6 +26,10 @@ static NSString * const USER_ID = @"userId";
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
         
+        _centralMgr = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+        
+        _btReady = NO;
+        
         _needsBarScoreUpdate = FALSE;
     }
     
@@ -44,7 +48,63 @@ static NSString * const USER_ID = @"userId";
     return instance;
 }
 
+#pragma mark - CBCentralManagerDelegate
+- (void)centralManagerDidUpdateState:(CBCentralManager *)central {
+    //self.cBReady = false;
+    NSString *stateString = nil;
+    
+    switch (central.state) {
+        case CBCentralManagerStatePoweredOff:
+            NSLog(@"CoreBluetooth BLE hardware is powered off");
+            stateString = @"Bluetooth is powered off.  If you want to play, go to settings and turn it on.";
+            _btReady = NO;
+            [self stopMonitoring];
+            break;
+        case CBCentralManagerStatePoweredOn:
+            NSLog(@"CoreBluetooth BLE hardware is powered on and ready");
+            _btReady = YES;
+               //start the bar beacon region monitoring
+                [ self startMonitoring];
 
+            break;
+        case CBCentralManagerStateResetting:
+            NSLog(@"CoreBluetooth BLE hardware is resetting");
+            break;
+        case CBCentralManagerStateUnauthorized:
+            NSLog(@"CoreBluetooth BLE state is unauthorized");
+            stateString = @"The platform doesn't support Bluetooth Low Energy.";
+            break;
+        case CBCentralManagerStateUnknown:
+            NSLog(@"CoreBluetooth BLE state is unknown");
+            stateString = @"The bluetooth LE state unknown, disabling for now.. update pending.";
+            break;
+        case CBCentralManagerStateUnsupported:
+            NSLog(@"CoreBluetooth BLE hardware is unsupported on this platform");
+            stateString = @"The app is not authorized to use Bluetooth Low Energy.";
+            break;
+        default:
+            break;
+    }
+    
+    if  (stateString) {
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hey" message:stateString delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+        
+        NSDictionary *btStateDict = [NSDictionary dictionaryWithObject:stateString
+                                                                 forKey:@"btState"];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"BluetoothUnavailable"
+                                                            object:nil
+                                                          userInfo:btStateDict];
+
+        
+        //[alert show];
+        
+    }
+    
+}
+
+#pragma mark CLLocationManagerDelegate
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region
 {
     NSLog(@"didRangeBeacons is CALLED!!!!");
@@ -60,6 +120,7 @@ static NSString * const USER_ID = @"userId";
     
 }
 
+#pragma CLLocationManagerDelegate
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region
 {
     NSLog(@"BarTender: didDetermineState is called.. for ");

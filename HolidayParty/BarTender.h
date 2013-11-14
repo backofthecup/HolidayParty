@@ -8,10 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import <CoreBluetooth/CoreBluetooth.h>
 #import "HttpClient.h"
 
 
-@interface BarTender : NSObject <CLLocationManagerDelegate>
+@interface BarTender : NSObject <CLLocationManagerDelegate, CBCentralManagerDelegate>
 
 + (BarTender *)sharedInstance;
 
@@ -20,8 +21,10 @@
 @property (nonatomic, copy, readonly) NSNumber *defaultPower;
 @property (nonatomic, assign, readonly) BOOL needsBarScoreUpdate;
 @property (nonatomic, strong, readonly) CLBeaconRegion *barRegion;
+@property (nonatomic, strong) CBCentralManager *centralMgr;
 @property (nonatomic, strong, readonly) CLLocationManager *locationManager;
 @property (strong, nonatomic) NSTimer *barUpdateTimer;
+@property (nonatomic, assign, readonly) BOOL btReady;
 
 - (BOOL) startMonitoring;
 - (BOOL) stopMonitoring;
