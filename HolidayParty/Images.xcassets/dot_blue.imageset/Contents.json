@@ -3,12 +3,12 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Dot.png"
+      "filename" : "dot_blue.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "Dot@2x.png"
+      "filename" : "dot_blue@2x.png"
     }
   ],
   "info" : {

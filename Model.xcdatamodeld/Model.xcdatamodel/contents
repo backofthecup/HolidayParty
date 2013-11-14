@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3400" systemVersion="12F37" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Beacon" representedClassName="Beacon" syncable="YES">
+        <attribute name="accuracy" optional="YES" transient="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="ack" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="claimed" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="imageClaimed" optional="YES" attributeType="String" syncable="YES"/>

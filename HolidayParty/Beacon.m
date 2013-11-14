@@ -17,5 +17,6 @@
 @dynamic ack;
 @dynamic imageClaimed;
 @dynamic imageUnclaimed;
+@dynamic accuracy;
 
 @end

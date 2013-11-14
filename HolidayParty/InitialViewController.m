@@ -13,6 +13,8 @@
 #import "Beacon.h"
 #import "CoreDataDao.h"
 
+static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
+
 @interface InitialViewController ()
 
 @property (nonatomic, strong) CLBeaconRegion *beaconRegion;
@@ -50,6 +52,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     self.navigationController.navigationBar.shadowImage = [UIImage new];
     self.navigationController.navigationBar.translucent = YES;
 
+    // get the persistent beacons
     _beacons = [[CoreDataDao sharedDao] beacons];
     
     _rangedBeacons = [NSMutableArray array];
@@ -112,10 +115,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     NSString *userId = [[NSUserDefaults standardUserDefaults] objectForKey:USER_NAME_KEY];
     
     if (!userId) {
-//        // prompt user for registration
-//        UINavigationController *registrationController = [self.storyboard instantiateViewControllerWithIdentifier:@"RegistrationNavigationController"];
-//        [self presentViewController:registrationController animated:NO completion:nil];
-        
+        // prompt user for registration
         [self promptForRegistration];
         
     }
@@ -139,7 +139,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    float y = 17.0;
+    float y = 20.0;
     float width = 11.0;
     float heigth = 11.0;
     float maxX = 250;
@@ -154,7 +154,8 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         if ([beacon.claimed boolValue]) {
             // beacon is claimed
             cell.imageView.image = [UIImage imageNamed:beacon.imageClaimed];
-            cell.textLabel.text = @"Claimed!";
+            cell.textLabel.text = @"Claimed";
+            [cell.contentView.layer setBorderWidth:0.0f];
             
             // hide the dot
             [dotImage setHidden:YES];
@@ -167,28 +168,42 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
             if ([rangedBeacons count]) {
                 CLBeacon *rangedBeacon = rangedBeacons[0];
                 NSLog(@"...beacon range is %1.2f", rangedBeacon.accuracy);
+
+                if (rangedBeacon.accuracy > 0.0) {
+                    beacon.accuracy = [NSNumber numberWithFloat:rangedBeacon.accuracy];
+                }
+                
                 // postion range is 72 to 250, cap at 50 meters
                 float x = 72 + (rangedBeacon.accuracy * 4.0);
                 if (x > maxX) {
                     x = maxX;
                 }
-                if ((rangedBeacon.accuracy >= 0.0) && (rangedBeacon.accuracy <= 2.0)) {
+                if ((rangedBeacon.accuracy >= 0.0) && (rangedBeacon.accuracy <= CLAIMABLE_BEACON_THRESHOLD)) {
                     // user is very close to beacon allow to claim
-                    dotImage.frame = CGRectMake(x, y, width, heigth);
-                    cell.textLabel.text = @"Tap to Claim";
+                    dotImage.frame = CGRectMake(72, y, width, heigth);
+                    [dotImage setImage:[UIImage imageNamed:@"dot_green"]];
+                    cell.textLabel.text = @"   Claim It";
                     cell.imageView.image = [UIImage imageNamed:beacon.imageClaimed];
+                    [cell.contentView.layer setBorderColor:[UIColor colorWithRed:51 green:204 blue:0 alpha:1.0].CGColor];
+                    [cell.contentView.layer setBorderWidth:1.0f];
                 }
-                else if (rangedBeacon.accuracy > 2.0) {
+                else if (rangedBeacon.accuracy > CLAIMABLE_BEACON_THRESHOLD) {
                     // user is not close enough to claim beacon
                     dotImage.frame = CGRectMake(x, y, width, heigth);
+                    [dotImage setImage:[UIImage imageNamed:@"dot_blue"]];
                     cell.textLabel.text = @"";
+                    [cell.contentView.layer setBorderWidth:0.0f];
                     cell.imageView.image = [UIImage imageNamed:beacon.imageUnclaimed];
                 }
                 
             }
             else {
                 // beacon was not found, set to max
+                // ignore
+                beacon.accuracy = [NSNumber numberWithFloat:50.0];
+                
                 dotImage.frame = CGRectMake(maxX, y, width, heigth);
+                [dotImage setImage:[UIImage imageNamed:@"dot_blue"]];
                 cell.textLabel.text = @"";
                 cell.imageView.image = [UIImage imageNamed:beacon.imageUnclaimed];
             }
@@ -210,7 +225,12 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     if ([beacons count]) {
         Beacon *beacon = beacons[0];
         if (![beacon.claimed boolValue]) {
-            beacon.claimed = [NSNumber numberWithBool:YES];
+            if (beacon.accuracy) {
+                NSLog(@"beacon accuracy %1.2f", [beacon.accuracy floatValue]);
+                if ([beacon.accuracy floatValue] <= CLAIMABLE_BEACON_THRESHOLD) {
+                    [self claimBeacon:beacon];
+                }
+            }
             
             [tableView reloadData];
         }
@@ -277,11 +297,30 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 
 #pragma mark - private methods
 - (void)claimBeacon:(Beacon *)beacon {
+    beacon.claimed = [NSNumber numberWithBool:YES];
+    [[CoreDataDao sharedDao] save];
+    
+    NSInteger userId = [[NSUserDefaults standardUserDefaults] integerForKey:USER_ID_KEY];
+    NSString *suserId = [NSString stringWithFormat:@"%li", (long)userId];
+    
+    NSDictionary *params = @{@"user_id": suserId, @"beacon_id" : [beacon.major stringValue]};
+
+    // update leaderboard
     HttpClient *client = [HttpClient sharedClient];
-    
-    
-    
-    
+    [client POST:CLAIM_BEACON_PATH parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSLog(@"..claim successful....");
+        beacon.ack = [NSNumber numberWithBool:YES];
+        [[CoreDataDao sharedDao] save];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"claim beacon failed failed at url... %@", operation.request.URL);
+        NSLog(@"error %@", error.localizedDescription);
+        
+        NSDictionary *userInfo = error.userInfo;
+        [userInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+            NSLog(@"%@ - %@", key, obj);
+        }];
+    }];
 }
 
 - (void)promptForRegistration {

@@ -27,11 +27,15 @@
                                 <color key="textColor" red="0.81960784310000001" green="0.93333333330000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uNi-CI-pEN">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="bottom" buttonType="roundedRect" showsTouchWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uNi-CI-pEN">
                                 <rect key="frame" x="25" y="80" width="125" height="125"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" name="controlHighlightColor" catalog="System" colorSpace="catalog"/>
-                                <state key="normal" backgroundImage="Smiley"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="7"/>
+                                <state key="normal" title="Take Your Picture" backgroundImage="Smiley">
+                                    <color key="titleColor" red="0.81960784310000001" green="0.93333333330000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <connections>
                                     <action selector="photoButtonTapped:" destination="CZ4-MO-1fc" eventType="touchUpInside" id="vz4-Cm-YwO"/>
                                 </connections>
@@ -57,24 +61,24 @@
                                     <action selector="rangingSwitchChanged:" destination="CZ4-MO-1fc" eventType="valueChanged" id="6cA-sn-4SQ"/>
                                 </connections>
                             </switch>
-                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="2CJ-xv-H32">
-                                <rect key="frame" x="10" y="235" width="290" height="274"/>
+                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="52" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="2CJ-xv-H32">
+                                <rect key="frame" x="10" y="234" width="290" height="313"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.14901960780000001" green="0.14901960780000001" blue="0.14901960780000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" textLabel="eks-Mr-PEh" style="IBUITableViewCellStyleDefault" id="b3P-H6-Bjw">
-                                        <rect key="frame" x="0.0" y="22" width="290" height="44"/>
+                                        <rect key="frame" x="0.0" y="22" width="290" height="52"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="b3P-H6-Bjw" id="PvT-ws-bff">
-                                            <rect key="frame" x="0.0" y="0.0" width="290" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="290" height="52"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="Dot" translatesAutoresizingMaskIntoConstraints="NO" id="3cz-xa-Bgb">
+                                                <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="dot_blue" translatesAutoresizingMaskIntoConstraints="NO" id="3cz-xa-Bgb">
                                                     <rect key="frame" x="250" y="17" width="11" height="11"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 </imageView>
-                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eks-Mr-PEh">
-                                                    <rect key="frame" x="15" y="0.0" width="260" height="44"/>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eks-Mr-PEh">
+                                                    <rect key="frame" x="15" y="0.0" width="260" height="52"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <color key="backgroundColor" red="0.14901960780000001" green="0.14901960780000001" blue="0.14901960780000001" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="30"/>
@@ -83,6 +87,10 @@
                                                 </label>
                                             </subviews>
                                             <color key="backgroundColor" red="0.14901960780000001" green="0.14901960780000001" blue="0.14901960780000001" alpha="1" colorSpace="calibratedRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="3cz-xa-Bgb" secondAttribute="trailing" constant="29" id="sXc-vr-LFs"/>
+                                                <constraint firstItem="3cz-xa-Bgb" firstAttribute="centerY" secondItem="eks-Mr-PEh" secondAttribute="centerY" id="zMf-xI-vto"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
@@ -216,9 +224,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Dot" width="11" height="11"/>
         <image name="Smiley" width="125" height="125"/>
         <image name="arjian_blue" width="45" height="45"/>
+        <image name="dot_blue" width="11" height="11"/>
         <image name="firewall_blue" width="45" height="45"/>
         <image name="globe" width="28" height="28"/>
         <image name="iso_blue" width="45" height="45"/>
