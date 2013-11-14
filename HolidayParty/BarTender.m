@@ -62,6 +62,7 @@ static NSString * const USER_ID = @"userId";
             break;
         case CBCentralManagerStatePoweredOn:
             NSLog(@"CoreBluetooth BLE hardware is powered on and ready");
+            stateString = @"Bluetooth hardware is powered on and ready";
             _btReady = YES;
                //start the bar beacon region monitoring
                 [ self startMonitoring];
@@ -69,18 +70,22 @@ static NSString * const USER_ID = @"userId";
             break;
         case CBCentralManagerStateResetting:
             NSLog(@"CoreBluetooth BLE hardware is resetting");
+            _btReady = NO;
             break;
         case CBCentralManagerStateUnauthorized:
             NSLog(@"CoreBluetooth BLE state is unauthorized");
             stateString = @"The platform doesn't support Bluetooth Low Energy.";
+            _btReady = NO;
             break;
         case CBCentralManagerStateUnknown:
             NSLog(@"CoreBluetooth BLE state is unknown");
             stateString = @"The bluetooth LE state unknown, disabling for now.. update pending.";
+            _btReady = NO;
             break;
         case CBCentralManagerStateUnsupported:
             NSLog(@"CoreBluetooth BLE hardware is unsupported on this platform");
             stateString = @"The app is not authorized to use Bluetooth Low Energy.";
+            _btReady = NO;
             break;
         default:
             break;
@@ -90,10 +95,11 @@ static NSString * const USER_ID = @"userId";
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hey" message:stateString delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
         
-        NSDictionary *btStateDict = [NSDictionary dictionaryWithObject:stateString
-                                                                 forKey:@"btState"];
+        NSNumber *btState = [NSNumber numberWithBool:_btReady];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"BluetoothUnavailable"
+        NSDictionary *btStateDict = [NSDictionary dictionaryWithObjectsAndKeys:stateString, @"btStateString", btState, @"btState", nil];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Bluetooth Status"
                                                             object:nil
                                                           userInfo:btStateDict];
 
