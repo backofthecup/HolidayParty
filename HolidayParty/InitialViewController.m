@@ -13,6 +13,7 @@
 #import "Beacon.h"
 #import "CoreDataDao.h"
 #import "BarTender.h"
+#import <AFNetworking/AFNetworking.h>
 
 static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
 
@@ -23,6 +24,7 @@ static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
 @property (nonatomic, strong) NSArray *beacons;
 @property (nonatomic, strong) NSMutableArray *rangedBeacons;
 @property (nonatomic, strong) NSString *originalWelcomeText;
+@property (nonatomic, assign) BOOL bleAvailable;
 
 - (void)promptForRegistration;
 - (void)registerUser:(NSString *)user;
@@ -46,6 +48,9 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 
 - (void)viewDidLoad
 {
+    
+    [super viewDidLoad];
+
     _originalWelcomeText = self.welcomeLabel.text;
     
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
@@ -108,6 +113,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                          }];
     
     [center addObserverForName:@"Bluetooth Status" object:nil queue:mainQueue usingBlock:^(NSNotification *note) {
+        NSLog(@"..Bluetooth status changed....");
         
         NSDictionary *bluetoothInfo = note.userInfo;
         
@@ -117,6 +123,17 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         NSLog(@"btSTatus is %@", btStatus);
         NSLog(@"btStateString is %@", btStateString);
         
+        if ([btStatus boolValue]) {
+            self.rangingSwitch.enabled = YES;
+        }
+        else {
+            // bluetooth not on
+            [[[UIAlertView alloc] initWithTitle:nil message:@"This app requires bluetooth to be enabled." delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Settings", nil] show];
+            
+            self.rangingSwitch.enabled = NO;
+            [self stopRanging];
+        }
+        
         /* note:  btStatus 1 : Bluetooth powered on.
                   btStatus 0 : bluetooth off.  Should disable all ranging operations.
          
@@ -125,9 +142,21 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
      
     }];
     
+    AFNetworkReachabilityManager *reachability = [AFNetworkReachabilityManager sharedManager];
+    [reachability setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        NSLog(@"reachability changed..... %li", status);
+        switch (status) {
+            case AFNetworkReachabilityStatusNotReachable:
+                NSLog(@"..network not reachable....");
+                [[[UIAlertView alloc] initWithTitle:@"Network Unreachable" message:@"Please make sure you have a network connetion." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                break;
+                
+            default:
+                break;
+        }
+    }];
 
-    [super viewDidLoad];
-
+    [reachability startMonitoring];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -344,6 +373,9 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 - (void)promptForRegistration {
+    if (![HttpClient sharedClient].reachabilityManager.reachable) {
+        return;
+    }
     NSString *userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"userName"];
 
     NSString *cancelButtonTitle = nil;
