@@ -19,6 +19,7 @@
 @property (nonatomic, copy, readonly) NSString *defaultRegionId;
 @property (nonatomic, copy, readonly) NSNumber *defaultPower;
 @property (nonatomic, assign, readonly) BOOL needsBarScoreUpdate;
+@property (nonatomic, strong, readonly) CLBeaconRegion *barRegion;
 @property (nonatomic, strong, readonly) CLLocationManager *locationManager;
 @property (strong, nonatomic) NSTimer *barUpdateTimer;
 

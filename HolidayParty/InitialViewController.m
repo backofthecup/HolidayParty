@@ -12,6 +12,7 @@
 #import "UIImage+Resize.h"
 #import "Beacon.h"
 #import "CoreDataDao.h"
+#import "BarTender.h"
 
 static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
 
@@ -507,12 +508,18 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     _beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid identifier:[uuid UUIDString]];
 
     [_locationManager startRangingBeaconsInRegion:_beaconRegion];
+    
+    //CM start ranging the bar beacon when app is active
+    [_locationManager startRangingBeaconsInRegion:[[BarTender sharedInstance] barRegion] ];
+
 }
 
 - (void)stopRanging {
     NSLog(@"..stopping ranging.....");
     [_locationManager stopRangingBeaconsInRegion:_beaconRegion];
-    
+
+    [_locationManager stopRangingBeaconsInRegion:[[BarTender sharedInstance] barRegion] ];
+
     self.welcomeLabel.hidden = NO;
     self.tableView.hidden = YES;
 }
@@ -580,6 +587,14 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region
 {
     NSLog(@"...locationManager didRangeBeacons....%lu", (unsigned long)[beacons count]);
+    
+    //CM should be two beacons if the region is the bar region
+    if ([[region.proximityUUID UUIDString] isEqualToString:[[[BarTender sharedInstance] defaultProximityUUID] UUIDString]]) {
+        [[BarTender sharedInstance] checkForBarProximity:beacons];
+     
+        //return out of this if it's the bar UUID
+        return;
+    }
     
 
     _rangedBeacons.array = beacons;

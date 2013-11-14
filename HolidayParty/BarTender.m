@@ -78,6 +78,7 @@ static NSString * const USER_ID = @"userId";
         {
             NSLog(@"application in background");            //notification.alertBody = @"You're inside the region";
             
+            //range beacons for 10 seconds.. 
             [manager startRangingBeaconsInRegion:(CLBeaconRegion*)region];
             
         }
@@ -126,13 +127,13 @@ static NSString * const USER_ID = @"userId";
     NSUUID *proximityId =_defaultProximityUUID;
     NSString *regionID =_defaultRegionId;
     
-    CLBeaconRegion *region = [[CLBeaconRegion alloc] initWithProximityUUID:proximityId identifier:regionID];
+    _barRegion = [[CLBeaconRegion alloc] initWithProximityUUID:proximityId identifier:regionID];
     
-    region.notifyOnEntry = YES;
-    region.notifyOnExit = YES;
-    region.notifyEntryStateOnDisplay = YES;
+    _barRegion.notifyOnEntry = YES;
+    _barRegion.notifyOnExit = YES;
+    _barRegion.notifyEntryStateOnDisplay = YES;
     
-    [_locationManager startMonitoringForRegion:region];
+    [_locationManager startMonitoringForRegion:_barRegion];
     
     return TRUE;
 }
@@ -144,8 +145,6 @@ static NSString * const USER_ID = @"userId";
 
 - (BOOL) checkForBarProximity:(NSArray*)barBeacons
 {
-    
-    //this could get called from InitialViewController during app foreground checks, or when application wakes up
     
     NSLog(@"Checking for barscore update.. check proximity to bar beacons");
     
@@ -250,19 +249,12 @@ static NSString * const USER_ID = @"userId";
     if (_needsBarScoreUpdate == NO) return FALSE;
     
     HttpClient *client = [HttpClient sharedClient];
-
     NSInteger userId = [[NSUserDefaults standardUserDefaults] integerForKey:USER_ID];
     
     //if user id == 0, they haven't registered yet
     if (userId == 0 ) { return FALSE; }
     
-   // NSLog(@"Bar score is %ld ", (long)barScoreValue);
-    
-    //barScoreValue = barScoreValue + 1;
-    
     NSString *updateUrl = [NSString stringWithFormat:@"increment_bar_score/%li", (long)userId];
-    
-    NSLog(@"Update Url is %@", updateUrl);
     
     [client GET:updateUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"bar score update successfull %@", responseObject);
