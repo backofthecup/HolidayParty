@@ -74,7 +74,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="dot_blue" translatesAutoresizingMaskIntoConstraints="NO" id="3cz-xa-Bgb">
-                                                    <rect key="frame" x="250" y="17" width="11" height="11"/>
+                                                    <rect key="frame" x="72" y="20" width="11" height="11"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 </imageView>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eks-Mr-PEh">

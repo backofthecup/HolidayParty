@@ -85,7 +85,7 @@
         return _persistentStoreCoordinator;
     }
 	
-    NSURL *storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"HolidayParty1"]];
+    NSURL *storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"HolidayParty"]];
 	NSLog(@"%@", [storeUrl description]);
 	
 	NSError *error = nil;

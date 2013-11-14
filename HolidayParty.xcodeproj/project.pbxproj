@@ -168,30 +168,30 @@
 		89E0602618207C0D002CBC39 /* HolidayParty */ = {
 			isa = PBXGroup;
 			children = (
-				8929100418332596000CB2DC /* Model.xcdatamodeld */,
+				89E0602F18207C0D002CBC39 /* AppDelegate.h */,
+				89E0603018207C0D002CBC39 /* AppDelegate.m */,
+				1A9ADA8818316B7700931870 /* BarTender.h */,
+				1A9ADA8718316B7700931870 /* BarTender.m */,
 				89291007183325F9000CB2DC /* Beacon.h */,
 				89291008183325F9000CB2DC /* Beacon.m */,
-				1A9ADA8718316B7700931870 /* BarTender.m */,
-				1A9ADA8818316B7700931870 /* BarTender.h */,
+				8929100A18332863000CB2DC /* CoreDataDao.h */,
+				8929100B18332863000CB2DC /* CoreDataDao.m */,
+				8987A01418234B470000CB50 /* HttpClient.h */,
+				8987A01518234B470000CB50 /* HttpClient.m */,
+				89E0603B18207C0D002CBC39 /* Images.xcassets */,
+				89E0603518207C0D002CBC39 /* InitialViewController.h */,
+				89E0603618207C0D002CBC39 /* InitialViewController.m */,
+				89E0603218207C0D002CBC39 /* Main.storyboard */,
+				89E0603818207C0D002CBC39 /* MapViewController.h */,
+				89E0603918207C0D002CBC39 /* MapViewController.m */,
+				8929100418332596000CB2DC /* Model.xcdatamodeld */,
+				89E0602718207C0D002CBC39 /* Supporting Files */,
 				89E6EDB5182D4A010014F8B9 /* UIImage+Alpha.h */,
 				89E6EDB6182D4A010014F8B9 /* UIImage+Alpha.m */,
 				89E6EDB7182D4A010014F8B9 /* UIImage+Resize.h */,
 				89E6EDB8182D4A010014F8B9 /* UIImage+Resize.m */,
 				89E6EDB9182D4A010014F8B9 /* UIImage+RoundedCorner.h */,
 				89E6EDBA182D4A010014F8B9 /* UIImage+RoundedCorner.m */,
-				89E0602F18207C0D002CBC39 /* AppDelegate.h */,
-				89E0603018207C0D002CBC39 /* AppDelegate.m */,
-				89E0603518207C0D002CBC39 /* InitialViewController.h */,
-				89E0603618207C0D002CBC39 /* InitialViewController.m */,
-				8987A01418234B470000CB50 /* HttpClient.h */,
-				8987A01518234B470000CB50 /* HttpClient.m */,
-				89E0603B18207C0D002CBC39 /* Images.xcassets */,
-				89E0603218207C0D002CBC39 /* Main.storyboard */,
-				89E0603818207C0D002CBC39 /* MapViewController.h */,
-				89E0603918207C0D002CBC39 /* MapViewController.m */,
-				89E0602718207C0D002CBC39 /* Supporting Files */,
-				8929100A18332863000CB2DC /* CoreDataDao.h */,
-				8929100B18332863000CB2DC /* CoreDataDao.m */,
 			);
 			path = HolidayParty;
 			sourceTree = "<group>";
@@ -276,6 +276,11 @@
 				TargetAttributes = {
 					89E0601C18207C0D002CBC39 = {
 						DevelopmentTeam = TP8G35A237;
+						SystemCapabilities = {
+							com.apple.iOS = {
+								enabled = 0;
+							};
+						};
 					};
 					89E0604018207C0E002CBC39 = {
 						TestTargetID = 89E0601C18207C0D002CBC39;
@@ -438,6 +443,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -477,6 +483,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -488,6 +495,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PROVISIONING_PROFILE = "F7A324F1-7E0E-4FA7-8888-6EED251166B8";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
