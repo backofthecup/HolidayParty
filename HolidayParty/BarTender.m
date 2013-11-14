@@ -74,7 +74,7 @@ static NSString * const USER_ID = @"userId";
             break;
         case CBCentralManagerStateUnauthorized:
             NSLog(@"CoreBluetooth BLE state is unauthorized");
-            stateString = @"The platform doesn't support Bluetooth Low Energy.";
+            stateString = @"The app is not authorized to use Bluetooth Low Energy";
             _btReady = NO;
             break;
         case CBCentralManagerStateUnknown:
@@ -84,7 +84,7 @@ static NSString * const USER_ID = @"userId";
             break;
         case CBCentralManagerStateUnsupported:
             NSLog(@"CoreBluetooth BLE hardware is unsupported on this platform");
-            stateString = @"The app is not authorized to use Bluetooth Low Energy.";
+            stateString = @"Bluetooth Low Energy is unsupported on this platform";
             _btReady = NO;
             break;
         default:
@@ -93,7 +93,8 @@ static NSString * const USER_ID = @"userId";
     
     if  (stateString) {
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hey" message:stateString delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hey" message:stateString delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+ //[alert show];        
         
         NSNumber *btState = [NSNumber numberWithBool:_btReady];
         
@@ -102,9 +103,6 @@ static NSString * const USER_ID = @"userId";
         [[NSNotificationCenter defaultCenter] postNotificationName:@"Bluetooth Status"
                                                             object:nil
                                                           userInfo:btStateDict];
-
-        
-        //[alert show];
         
     }
     

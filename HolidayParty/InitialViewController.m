@@ -107,19 +107,23 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                              
                          }];
     
-//    [center addObserverForName:@"BluetoothUnavailable" object:nil queue:mainQueue usingBlock:^(NSNotification *note) {
-//     
-//        [TSMessage showNotificationInViewController:self
-//                                              title:NSLocalizedString(@"Bluetooth Unavailable", nil)
-//                                           subtitle:NSLocalizedString(@"If you want to play, go to Settings and turn it on.", nil)
-//                                               type:TSMessageNotificationTypeError
-//                                           duration:TSMessageNotificationDurationAutomatic
-//                                           callback:nil
-//                                        buttonTitle:nil
-//                                     buttonCallback:nil
-//                                         atPosition:TSMessageNotificationPositionTop
-//                                canBeDismisedByUser:YES];
-//    }];
+    [center addObserverForName:@"Bluetooth Status" object:nil queue:mainQueue usingBlock:^(NSNotification *note) {
+        
+        NSDictionary *bluetoothInfo = note.userInfo;
+        
+        NSNumber *btStatus = [bluetoothInfo objectForKey:@"btState"];
+        NSString *btStateString = [bluetoothInfo objectForKey:@"btStateString"];
+        
+        NSLog(@"btSTatus is %@", btStatus);
+        NSLog(@"btStateString is %@", btStateString);
+        
+        /* note:  btStatus 1 : Bluetooth powered on.
+                  btStatus 0 : bluetooth off.  Should disable all ranging operations.
+         
+                  if btStatus 0 then check the state string
+        */
+     
+    }];
     
 
     [super viewDidLoad];
