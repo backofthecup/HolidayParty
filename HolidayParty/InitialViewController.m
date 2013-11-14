@@ -67,6 +67,9 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     if (user) {
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
 
+        NSNumber *barScore = [[NSUserDefaults standardUserDefaults] valueForKey:BAR_SCORE_KEY];
+        self.barScoreLabel.text = [barScore stringValue];
+        
         // load the user's photo
         [self loadUserImage];
     }
