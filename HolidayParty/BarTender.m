@@ -11,6 +11,7 @@
 
 static NSString * const BAR_SCORE = @"barScore";
 static NSString * const USER_ID = @"userId";
+static float const BAR_BEACON_THRESHOLD = 2.0f;
 
 @implementation BarTender
 
@@ -213,52 +214,21 @@ static NSString * const USER_ID = @"userId";
     
     NSLog(@"Checking for barscore update.. check proximity to bar beacons");
     
-    /* there should be two here.. 
-     
-     If you're immediate to any one of the bar beacons, then we're available for update
-    
-     if near:  
-     
-     check  beacon.major
-            beacon.minor
-            beacon.accuracy (in meters)
-     
-     If close enough:
-            _needsBarScoreUpdate = TRUE;
-     else:
-            _needsBarScoreUpdate = FALSE;
-     
-     if 
-    */
-    
-    // immediate
-    NSArray *immediateBeacons = [barBeacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityImmediate]];
-    if([immediateBeacons count]) {
-        NSLog(@"..immediate beacon found...");
+    for (id myArrayElement in barBeacons) {
+        CLBeacon *beacon = (CLBeacon*)myArrayElement;
         
-        _needsBarScoreUpdate = TRUE;
-    }
-    
-    NSArray *nearBeacons = [barBeacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityNear]];
-    if([nearBeacons count]){
-
-        NSLog(@"..Near beacons found");
+        NSLog(@"beacon major %@", beacon.major);
+        NSLog(@"beacon minor %@", beacon.minor);
+        NSLog(@"beacon accuracy is %.2fm", beacon.accuracy);
         
-        _needsBarScoreUpdate = TRUE;
-    }
-    
-    NSArray *farBeacons = [barBeacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityFar]];
-    if([farBeacons count]) {
-        
-        NSLog(@"far beacons found.. check to see if they've been welcomed");
-//        [_beacons setObject:farBeacons forKey:[NSNumber numberWithInt:CLProximityFar]];
-//        self.welcomeLabel.text = self.originalWelcomeText;
-//        self.claimBeaconButton.hidden = YES;
-        
-        _needsBarScoreUpdate = FALSE;
-
+        if ((beacon.accuracy < BAR_BEACON_THRESHOLD) && (beacon.accuracy > 0.0f) ) {
+            _needsBarScoreUpdate = YES;
+        }
+        else
+            _needsBarScoreUpdate = NO;
     }
   
+    //removing.. 
     return _needsBarScoreUpdate;
 }
 

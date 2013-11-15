@@ -277,6 +277,9 @@
 					89E0601C18207C0D002CBC39 = {
 						DevelopmentTeam = TP8G35A237;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.iOS = {
 								enabled = 0;
 							};
