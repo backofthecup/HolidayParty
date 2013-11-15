@@ -348,6 +348,14 @@ static NSString * const USER_ID = @"userId";
         
 
         });
+        
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+            // send a local notification that their bar score is updated
+            
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.alertBody = @"Your Bar score is updated!";
+            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        }
             _needsBarScoreUpdate = NO;
         
         
