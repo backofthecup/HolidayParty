@@ -15,7 +15,7 @@
 #import "BarTender.h"
 #import <AFNetworking/AFNetworking.h>
 
-static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
+static float const CLAIMABLE_BEACON_THRESHOLD = 3.0f;   // 2 meters
 
 @interface InitialViewController ()
 
@@ -71,7 +71,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     if (user) {
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
 
-        self.slideToBeginLabel.hidden = NO;
         self.playButton.hidden = NO;
         NSNumber *barScore = [[NSUserDefaults standardUserDefaults] valueForKey:BAR_SCORE_KEY];
         self.barScoreLabel.text = [barScore stringValue];
@@ -80,7 +79,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         [self loadUserImage];
     }
     else {
-        self.slideToBeginLabel.hidden = YES;
         self.playButton.hidden = YES;
     }
     
@@ -200,7 +198,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    float y = 20.0;
+    float y = 15.0;
     float width = 11.0;
     float heigth = 11.0;
     float maxX = 250;
@@ -341,35 +339,19 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     
 }
 
-- (IBAction)rangingSwitchChanged:(id)sender {
-    if (_rangingSwitch.on) {
-        if (self.isBluetoothOn) {
-            [self startRanging];
-        }
-        else {
-            // bluetooth not on
-            [_bluetoothAlertView show];
-            _rangingSwitch.on = NO;
-        }
-    }
-    else {
-        [self stopRanging];
-    }
-    
-}
 
 - (IBAction)userButtonTapped:(id)sender {
     [self promptForRegistration];
 }
 
 - (IBAction)playButtonTapped:(id)sender {
-    if (self.isBluetoothOn) {
+//    if (self.isBluetoothOn) {
         [self startRanging];
-    }
-    else {
-        // bluetooth not on
-        [_bluetoothAlertView show];
-    }
+//    }
+//    else {
+//        // bluetooth not on
+//        [_bluetoothAlertView show];
+//    }
     
 }
 
@@ -442,8 +424,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         NSLog(@"User id from    response %li", (long)userId);
         [self.userButton setTitle:[NSString stringWithFormat:@"Hi %@!", user] forState:UIControlStateNormal];
         
-        self.rangingSwitch.hidden = NO;
-        self.slideToBeginLabel.hidden = NO;
         self.playButton.hidden = NO;
         
         [TSMessage showNotificationInViewController:self
@@ -575,16 +555,9 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 - (void)startRanging {
     NSLog(@"...starting to range.....");
     self.welcomeLabel.hidden = YES;
-    self.slideToBeginLabel.hidden = YES;
     self.playButton.hidden = YES;
     self.tableView.hidden = NO;
-    
-    self.image1.hidden = YES;
-    self.image2.hidden = YES;
-    self.image3.hidden = YES;
-    self.image4.hidden = YES;
-    self.image5.hidden = YES;
-    self.image6.hidden = YES;
+    self.iconBarImage.hidden = YES;
     
     
     // This location manager will be used to demonstrate how to range beacons.
@@ -597,28 +570,19 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     [_locationManager startRangingBeaconsInRegion:_beaconRegion];
     
     //CM start ranging the bar beacon when app is active
-    [_locationManager startRangingBeaconsInRegion:[[BarTender sharedInstance] barRegion] ];
+//    [_locationManager startRangingBeaconsInRegion:[[BarTender sharedInstance] barRegion] ];
 
 }
 
 - (void)stopRanging {
     NSLog(@"..stopping ranging.....");
-    self.rangingSwitch.on = NO;
     [_locationManager stopRangingBeaconsInRegion:_beaconRegion];
-
     [_locationManager stopRangingBeaconsInRegion:[[BarTender sharedInstance] barRegion] ];
 
     self.welcomeLabel.hidden = NO;
-    self.slideToBeginLabel.hidden = NO;
     self.playButton.hidden = NO;
-    self.image1.hidden = NO;
-    self.image2.hidden = NO;
-    self.image3.hidden = NO;
-    self.image4.hidden = NO;
-    self.image5.hidden = NO;
-    self.image6.hidden = NO;
+    self.iconBarImage.hidden = NO;
 
-    
     self.tableView.hidden = YES;
 }
 
