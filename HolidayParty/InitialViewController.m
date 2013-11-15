@@ -410,7 +410,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         // overwriting previous user, allow for Cancel
         cancelButtonTitle = @"Cancel";
     }
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Welcome to the party. Please enter your name (You can change this at anytime):" message:nil delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"OK", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Welcome to the Party" message:@" Enter your name. You can change this at anytime." delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:@"OK", nil];
     alert.alertViewStyle = UIAlertViewStylePlainTextInput;
     
     UITextField *text = [alert textFieldAtIndex:0];
