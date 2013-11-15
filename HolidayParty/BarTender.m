@@ -228,6 +228,7 @@ static float const BAR_BEACON_THRESHOLD = 2.0f;
             _needsBarScoreUpdate = NO;
     }
   
+    //removing.. 
     return _needsBarScoreUpdate;
 }
 
