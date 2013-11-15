@@ -24,7 +24,7 @@ static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
 @property (nonatomic, strong) NSArray *beacons;
 @property (nonatomic, strong) NSMutableArray *rangedBeacons;
 @property (nonatomic, assign) BOOL isBluetoothOn;
-@property (nonatomic, strong) UIAlertView *bluetoothAlertView;
+@property (nonatomic, strong) UIAlertView *networkUnreachableAlertView;
 
 - (void)promptForRegistration;
 - (void)registerUser:(NSString *)user;
@@ -35,6 +35,7 @@ static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
 - (void)loadUserImage;
 - (void)startRanging;
 - (void)stopRanging;
+- (BOOL)networkReachable;
 
 @end
 
@@ -51,7 +52,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     
     [super viewDidLoad];
     
-    _bluetoothAlertView = [[UIAlertView alloc] initWithTitle:nil message:@"This app requires bluetooth to be enabled." delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Settings", nil];
+    _networkUnreachableAlertView = [[UIAlertView alloc] initWithTitle:@"Network Unreachable" message:@"Please make sure you have a network connetion." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 
 
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
@@ -62,6 +63,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     // put a border around the play button
     [self.playButton.layer setBorderColor:[UIColor colorWithRed:209 green:238 blue:255 alpha:1.0].CGColor];
     [self.playButton.layer setBorderWidth:1.0f];
+    
     // get the persistent beacons
     _beacons = [[CoreDataDao sharedDao] beacons];
     
@@ -139,7 +141,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         }
         else {
             // bluetooth not on
-            [_bluetoothAlertView show];
+//            [_bluetoothAlertView show];
             self.isBluetoothOn = NO;
             [self stopRanging];
         }
@@ -158,7 +160,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         switch (status) {
             case AFNetworkReachabilityStatusNotReachable:
                 NSLog(@"..network not reachable....");
-                [[[UIAlertView alloc] initWithTitle:@"Network Unreachable" message:@"Please make sure you have a network connetion." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                [_networkUnreachableAlertView show];
                 break;
                 
             default:
@@ -315,44 +317,18 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 
 #pragma mark - IBAction messages
 - (IBAction)photoButtonTapped:(id)sender {
-    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
-    controller.delegate = self;
-    
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        controller.sourceType = UIImagePickerControllerSourceTypeCamera;
-        controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+    if ([self networkReachable]) {
+        UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+        controller.delegate = self;
+        
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            controller.sourceType = UIImagePickerControllerSourceTypeCamera;
+            controller.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+        }
+        
+        [self presentViewController:controller animated:YES completion:nil];
+        
     }
-    
-    [self presentViewController:controller animated:YES completion:nil];
-    
-    NSLog(@"this is a change");
-}
-
-
-
-- (IBAction)startOverTapped:(id)sender {
-    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:USER_NAME_KEY];
-    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:USER_ID_KEY];
-    
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
-    NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docsDir = dirPaths[0];
-    
-    // remove user photo
-    NSString *imagePath = [docsDir stringByAppendingPathComponent:USER_IMAGE_FILE];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if ([fileManager fileExistsAtPath:imagePath isDirectory:NO]) {
-        // remove the file
-        NSError *error = nil;
-        [fileManager removeItemAtPath:imagePath error:&error];
-    
-    }
-    
-    [self loadUserImage];
-    
-    [self promptForRegistration];
-    
 }
 
 
@@ -361,12 +337,15 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 - (IBAction)playButtonTapped:(id)sender {
+    // make sure bluetooth is on and network connection is good
     if (self.isBluetoothOn) {
-        [self startRanging];
+        if ([self networkReachable]) {
+            [self startRanging];
+        }
     }
     else {
         // bluetooth not on
-        [_bluetoothAlertView show];
+        [[[UIAlertView alloc] initWithTitle:nil message:@"This app requires bluetooth to be enabled. Please turn on Bluetooth in the Settings app" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
     }
     
 }
@@ -400,9 +379,10 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 - (void)promptForRegistration {
-//    if (![HttpClient sharedClient].reachabilityManager.reachable) {
-//        return;
-//    }
+    if (![self networkReachable]) {
+        return;
+    }
+    
     NSString *userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"userName"];
 
     NSString *cancelButtonTitle = nil;
@@ -602,12 +582,25 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     self.tableView.hidden = YES;
 }
 
+- (BOOL)networkReachable {
+    BOOL reachable = YES;
+    if (![HttpClient sharedClient].reachabilityManager.reachable) {
+        reachable = NO;
+        [_networkUnreachableAlertView show];
+    }
+    
+    
+    return reachable;
+    
+}
+
 #pragma mark - UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     NSLog(@"..alert view responder...");
     if (buttonIndex == alertView.cancelButtonIndex) {
         return;
     }
+    
     
     // user tapped register
     UITextField *textField = [alertView textFieldAtIndex:0];
