@@ -15,7 +15,7 @@
 #import "BarTender.h"
 #import <AFNetworking/AFNetworking.h>
 
-static float const CLAIMABLE_BEACON_THRESHOLD = 3.0f;   // 2 meters
+static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
 
 @interface InitialViewController ()
 
@@ -191,6 +191,17 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     return 1;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat height = 40;
+    if ([UIScreen mainScreen].bounds.size.height > 500) {
+        // iphone 5
+        NSLog(@"screen height %1.2f", [UIScreen mainScreen].bounds.size.height);
+        height = 50;
+    }
+    
+    return height;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [_beacons count];
 }
@@ -199,6 +210,11 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     float y = 15.0;
+    if ([UIScreen mainScreen].bounds.size.height > 500) {
+        // iphone 5
+        y = 20;
+    }
+
     float width = 11.0;
     float heigth = 11.0;
     float maxX = 250;
@@ -241,7 +257,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                     // user is very close to beacon allow to claim
                     dotImage.frame = CGRectMake(72, y, width, heigth);
                     [dotImage setImage:[UIImage imageNamed:@"dot_green"]];
-                    cell.textLabel.text = @"   Claim It";
+                    cell.textLabel.text = @"    Claim It";
                     cell.imageView.image = [UIImage imageNamed:beacon.imageClaimed];
                     [cell.contentView.layer setBorderColor:[UIColor colorWithRed:51 green:204 blue:0 alpha:1.0].CGColor];
                     [cell.contentView.layer setBorderWidth:1.0f];
@@ -345,13 +361,13 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 - (IBAction)playButtonTapped:(id)sender {
-//    if (self.isBluetoothOn) {
+    if (self.isBluetoothOn) {
         [self startRanging];
-//    }
-//    else {
-//        // bluetooth not on
-//        [_bluetoothAlertView show];
-//    }
+    }
+    else {
+        // bluetooth not on
+        [_bluetoothAlertView show];
+    }
     
 }
 
@@ -570,7 +586,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     [_locationManager startRangingBeaconsInRegion:_beaconRegion];
     
     //CM start ranging the bar beacon when app is active
-//    [_locationManager startRangingBeaconsInRegion:[[BarTender sharedInstance] barRegion] ];
+    [_locationManager startRangingBeaconsInRegion:[[BarTender sharedInstance] barRegion] ];
 
 }
 
