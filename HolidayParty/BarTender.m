@@ -11,7 +11,7 @@
 
 static NSString * const BAR_SCORE = @"barScore";
 static NSString * const USER_ID = @"userId";
-static float const BAR_BEACON_THRESHOLD = 2.0f;
+static float const BAR_BEACON_THRESHOLD = 8.0f;
 
 @implementation BarTender
 
