@@ -52,8 +52,32 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     
     [super viewDidLoad];
     
+    // intialize the http client, this will start network reachabilty monitoring
+    [HttpClient sharedClient];
+    
     _networkUnreachableAlertView = [[UIAlertView alloc] initWithTitle:@"Network Unreachable" message:@"Please make sure you have a network connetion." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 
+    
+    AFNetworkReachabilityManager *reachability = [HttpClient sharedClient].reachabilityManager;
+    [reachability setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        NSLog(@"reachability changed..... %li", status);
+        switch (status) {
+            case AFNetworkReachabilityStatusNotReachable:
+                NSLog(@"..network not reachable....");
+                [_networkUnreachableAlertView show];
+                break;
+                
+        
+            default:
+                break;
+        }
+    }];
+    
+//    [reachability startMonitoring];
+
+    
+    //    [reachability startMonitoring];
+//    _reachability = reachability;
 
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
                                                   forBarMetrics:UIBarMetricsDefault];
@@ -154,21 +178,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
      
     }];
     
-    AFNetworkReachabilityManager *reachability = [AFNetworkReachabilityManager sharedManager];
-    [reachability setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        NSLog(@"reachability changed..... %li", status);
-        switch (status) {
-            case AFNetworkReachabilityStatusNotReachable:
-                NSLog(@"..network not reachable....");
-                [_networkUnreachableAlertView show];
-                break;
-                
-            default:
-                break;
-        }
-    }];
-
-    [reachability startMonitoring];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -176,9 +185,8 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     NSString *userId = [[NSUserDefaults standardUserDefaults] objectForKey:USER_NAME_KEY];
     
     if (!userId) {
-        // prompt user for registration
+        // prompt user for registration after slight delay to allow reachability to start monitoring
         [self promptForRegistration];
-        
     }
 }
 
@@ -382,7 +390,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     if (![self networkReachable]) {
         return;
     }
-    
+
     NSString *userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"userName"];
 
     NSString *cancelButtonTitle = nil;
@@ -583,9 +591,13 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 }
 
 - (BOOL)networkReachable {
-    BOOL reachable = YES;
-    if (![HttpClient sharedClient].reachabilityManager.reachable) {
-        reachable = NO;
+    BOOL reachable = NO;
+    AFNetworkReachabilityManager *reachability = [HttpClient sharedClient].reachabilityManager;
+    if (reachability.reachableViaWiFi || reachability.reachableViaWWAN) {
+        reachable = YES;
+        NSLog(@"...http client thinks network is REACHABLE......");
+    }
+    else {
         [_networkUnreachableAlertView show];
     }
     
