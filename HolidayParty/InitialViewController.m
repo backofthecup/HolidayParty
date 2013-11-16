@@ -526,7 +526,17 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:imagePath isDirectory:NO]) {
         NSLog(@"..loading image from %@", imagePath);
-        [self.photoButton setBackgroundImage:[UIImage imageWithContentsOfFile:imagePath] forState:UIControlStateNormal];
+        
+        
+        /** cropping some of the image here */
+        CGRect cropRect = CGRectMake(0,50, 325, 380);
+        
+        UIImage *original =[UIImage imageWithContentsOfFile:imagePath];
+        
+        UIImage *newImage = [original croppedImage:cropRect];
+        
+     //  CM [self.photoButton setBackgroundImage:[UIImage imageWithContentsOfFile:imagePath] forState:UIControlStateNormal];
+        [self.photoButton setBackgroundImage:newImage forState:UIControlStateNormal];
         
         [self.photoButton setTitle:@"" forState:UIControlStateNormal];
     }
