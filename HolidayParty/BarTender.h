@@ -11,6 +11,8 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #import "HttpClient.h"
 
+extern NSInteger const kBarScoreUpdateNotificationType;
+extern NSInteger const kUserWelcomeNotificationType;
 
 @interface BarTender : NSObject <CLLocationManagerDelegate, CBCentralManagerDelegate>
 
@@ -21,6 +23,7 @@
 @property (nonatomic, copy, readonly) NSNumber *defaultPower;
 @property (nonatomic, assign, readonly) BOOL needsBarScoreUpdate;
 @property (nonatomic, strong, readonly) CLBeaconRegion *barRegion;
+@property (nonatomic, strong, readonly) CLCircularRegion *barGPSRegion;
 @property (nonatomic, strong) CBCentralManager *centralMgr;
 @property (nonatomic, strong, readonly) CLLocationManager *locationManager;
 @property (strong, nonatomic) NSTimer *barUpdateTimer;
@@ -33,5 +36,6 @@
 - (BOOL) checkForBarProximity:(NSArray*)barBeacons;
 - (BOOL) updateBarScore;
 - (BOOL) updateBarScoreInBackground;
+- (BOOL) userWelcomeMessage;
 
 @end

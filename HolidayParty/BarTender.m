@@ -11,9 +11,14 @@
 
 static NSString * const BAR_SCORE = @"barScore";
 static NSString * const USER_ID = @"userId";
+static NSString * const USER_WELCOMED = @"userWelcomed";
 static float const BAR_BEACON_THRESHOLD = 8.0f;
 
+NSInteger const kBarScoreUpdateNotificationType = 1;
+NSInteger const kUserWelcomeNotificationType = 2;
+
 @implementation BarTender
+
 
 - (id)init
 {
@@ -24,10 +29,17 @@ static float const BAR_BEACON_THRESHOLD = 8.0f;
         _defaultPower = @-54;
         _defaultRegionId = @"com.appsontheside.HolidayParty.BarRegion";
         
+        
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
         
         _centralMgr = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+        
+        
+        CLLocationCoordinate2D location = CLLocationCoordinate2DMake(40.71972369, -73.99946627);
+        
+        _barGPSRegion = [[CLCircularRegion alloc]initWithCenter:location radius:25.0 identifier:@"com.appsontheside.HolidayParty.BarGPSRegion"];
+
         
         _btReady = NO;
         
@@ -47,6 +59,34 @@ static float const BAR_BEACON_THRESHOLD = 8.0f;
     });
     
     return instance;
+}
+
+
+- (BOOL) userWelcomeMessage {
+    
+    NSInteger userWelcomed = [[NSUserDefaults standardUserDefaults] integerForKey:USER_WELCOMED];
+    
+    if (userWelcomed == 0) {
+        
+        //user now welcomed!
+        [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:USER_WELCOMED];
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        notification.alertBody = @"You made it!  Grab a drink and update your Bar Score.";
+        
+        NSString *notificationType = @"notificationType";
+        NSNumber *notificationValue = [NSNumber numberWithInt:2];
+        
+        NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:notificationValue forKey:notificationType];
+        notification.userInfo = userInfoDict;
+        
+        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    }
+
+    
+    return TRUE;
 }
 
 #pragma mark - CBCentralManagerDelegate
@@ -122,13 +162,23 @@ static float const BAR_BEACON_THRESHOLD = 8.0f;
         
         [self updateBarScoreInBackground];
     }
-    
+ 
 }
 
 #pragma CLLocationManagerDelegate
+- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
+
+    //check if they're greeted..
+    
+    NSLog(@"Did Enter Region");
+    
+    [self userWelcomeMessage];
+}
+
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region
 {
     NSLog(@"BarTender: didDetermineState is called.. for ");
+
     
     if ([region isKindOfClass:[CLBeaconRegion class]] ) {
         
@@ -182,6 +232,18 @@ static float const BAR_BEACON_THRESHOLD = 8.0f;
         }
     
     }
+    else if ([region isKindOfClass:[CLCircularRegion class]]) {
+        NSLog(@"CLCircularRegion Found");
+        
+        if (state == CLRegionStateInside ) {
+            
+            NSLog(@"CLRegion STate INSIDE HERE!!!! ");
+        }
+        else if(state == CLRegionStateOutside) {
+                
+            NSLog(@" CL Region State outside");
+            }
+        }
 }
 
 - (BOOL) startMonitoring
@@ -200,6 +262,7 @@ static float const BAR_BEACON_THRESHOLD = 8.0f;
     _barRegion.notifyEntryStateOnDisplay = YES;
     
     [_locationManager startMonitoringForRegion:_barRegion];
+    [_locationManager startMonitoringForRegion:_barGPSRegion];
     
     return TRUE;
 }
@@ -228,7 +291,13 @@ static float const BAR_BEACON_THRESHOLD = 8.0f;
             _needsBarScoreUpdate = NO;
     }
   
-    //removing.. 
+    NSArray *farBeacons = [barBeacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"proximity = %d", CLProximityFar]];
+    if([farBeacons count]) {
+        
+        [self userWelcomeMessage];
+    }
+
+    
     return _needsBarScoreUpdate;
 }
 
@@ -324,6 +393,13 @@ static float const BAR_BEACON_THRESHOLD = 8.0f;
             
             UILocalNotification *notification = [[UILocalNotification alloc] init];
             notification.alertBody = @"Your Bar score is updated!";
+            
+            NSString *notificationType = @"notificationType";
+            NSNumber *notificationValue = [NSNumber numberWithInt:1];
+            
+            NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:notificationValue forKey:notificationType];
+            notification.userInfo = userInfoDict;
+            
             [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
         }
             _needsBarScoreUpdate = NO;

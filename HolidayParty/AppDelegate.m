@@ -65,4 +65,28 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    NSLog(@"didReceiveLocalNotification app in foreground.. check the notification type");
+    
+    NSDictionary *userInfo = notification.userInfo;
+    NSNumber *notificationValue = [userInfo objectForKey:@"notificationType"];
+    NSLog(@"Notification Type is %@", notificationValue);
+
+    
+    if (notificationValue.integerValue == kUserWelcomeNotificationType) {
+
+            //send a notification to welcome the user if the app in foreground
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"UserWelcomeMessage" object:nil];
+        
+    }
+
+    
+    // If the application is in the foreground, we will notify the user of the region's state via an alert.
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:notification.alertBody message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//    [alert show];
+}
+
+
 @end

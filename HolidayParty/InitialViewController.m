@@ -130,6 +130,21 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                              
                          }];
 
+        [center addObserverForName:@"UserWelcomeMessage" object:nil
+                         queue:mainQueue usingBlock:^(NSNotification *note) {
+                             
+                             [TSMessage showNotificationInViewController:self
+                                                                   title:NSLocalizedString(@"You made it!  Thanks for coming", nil)
+                                                                subtitle:NSLocalizedString(@"Grab a drink and update your Bar Score", nil)
+                                                                    type:TSMessageNotificationTypeSuccess
+                                                                duration:TSMessageNotificationDurationAutomatic
+                                                                callback:nil
+                                                             buttonTitle:nil
+                                                          buttonCallback:nil
+                                                              atPosition:TSMessageNotificationPositionTop
+                                                     canBeDismisedByUser:YES];
+                             
+                         }];
     
     [center addObserverForName:@"BarScoreUpdateFailed" object:nil
                          queue:mainQueue usingBlock:^(NSNotification *note) {
