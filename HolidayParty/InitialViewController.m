@@ -292,12 +292,12 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
             }
             else {
                 // beacon was not found, set to max
-                // ignore
                 beacon.accuracy = [NSNumber numberWithFloat:50.0];
                 
                 dotImage.frame = CGRectMake(maxX, y, width, heigth);
                 [dotImage setImage:[UIImage imageNamed:@"dot_blue"]];
                 cell.textLabel.text = @"";
+                [cell.contentView.layer setBorderWidth:0.0f];
                 cell.imageView.image = [UIImage imageNamed:beacon.imageUnclaimed];
             }
         }
