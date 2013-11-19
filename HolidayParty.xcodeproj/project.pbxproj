@@ -13,6 +13,7 @@
 		89291009183325F9000CB2DC /* Beacon.m in Sources */ = {isa = PBXBuildFile; fileRef = 89291008183325F9000CB2DC /* Beacon.m */; };
 		8929100C18332863000CB2DC /* CoreDataDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 8929100B18332863000CB2DC /* CoreDataDao.m */; };
 		8929100E183328BB000CB2DC /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8929100D183328BB000CB2DC /* CoreData.framework */; };
+		89430F2E183AFC420040A2EF /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 89430F2D183AFC420040A2EF /* iTunesArtwork */; };
 		896426B91827EBF500F0EB6B /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 896426B71827EBF500F0EB6B /* CoreBluetooth.framework */; };
 		896426BA1827EBF500F0EB6B /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 896426B81827EBF500F0EB6B /* CoreLocation.framework */; };
 		896426BC1827EC0700F0EB6B /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 896426BB1827EC0700F0EB6B /* MapKit.framework */; };
@@ -59,6 +60,7 @@
 		8929100A18332863000CB2DC /* CoreDataDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataDao.h; sourceTree = "<group>"; };
 		8929100B18332863000CB2DC /* CoreDataDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataDao.m; sourceTree = "<group>"; };
 		8929100D183328BB000CB2DC /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		89430F2D183AFC420040A2EF /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		896426B71827EBF500F0EB6B /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		896426B81827EBF500F0EB6B /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		896426BB1827EC0700F0EB6B /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -168,6 +170,7 @@
 		89E0602618207C0D002CBC39 /* HolidayParty */ = {
 			isa = PBXGroup;
 			children = (
+				89430F2D183AFC420040A2EF /* iTunesArtwork */,
 				89E0602F18207C0D002CBC39 /* AppDelegate.h */,
 				89E0603018207C0D002CBC39 /* AppDelegate.m */,
 				1A9ADA8818316B7700931870 /* BarTender.h */,
@@ -317,6 +320,7 @@
 				89E0603C18207C0D002CBC39 /* Images.xcassets in Resources */,
 				89E0602B18207C0D002CBC39 /* InfoPlist.strings in Resources */,
 				89E0603418207C0D002CBC39 /* Main.storyboard in Resources */,
+				89430F2E183AFC420040A2EF /* iTunesArtwork in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
