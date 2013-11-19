@@ -29,7 +29,7 @@ static float const CLAIMABLE_BEACON_THRESHOLD = 2.0f;   // 2 meters
 - (void)promptForRegistration;
 - (void)registerUser:(NSString *)user;
 - (void)updateUsername:(NSString *)username;
-- (void)uploadUserImage:(NSString *)imagePath;
+- (void)uploadUserImage:(NSData *)data;
 - (void)claimBeacon:(Beacon *)beacon;
 
 - (void)loadUserImage;
@@ -60,7 +60,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     
     AFNetworkReachabilityManager *reachability = [HttpClient sharedClient].reachabilityManager;
     [reachability setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        NSLog(@"reachability changed..... %li", status);
+        NSLog(@"reachability changed..... %i", status);
         switch (status) {
             case AFNetworkReachabilityStatusNotReachable:
                 NSLog(@"..network not reachable....");
@@ -73,12 +73,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         }
     }];
     
-//    [reachability startMonitoring];
-
-    
-    //    [reachability startMonitoring];
-//    _reachability = reachability;
-
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
                                                   forBarMetrics:UIBarMetricsDefault];
     self.navigationController.navigationBar.shadowImage = [UIImage new];
@@ -220,7 +214,6 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     CGFloat height = 40;
     if ([UIScreen mainScreen].bounds.size.height > 500) {
         // iphone 5
-        NSLog(@"screen height %1.2f", [UIScreen mainScreen].bounds.size.height);
         height = 50;
     }
     
@@ -399,6 +392,11 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
             NSLog(@"%@ - %@", key, obj);
         }];
     }];
+    
+    if ([[_beacons filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"claimed = NO"]] count] == 0) {
+        [[[UIAlertView alloc] initWithTitle:@"Congratulations" message:@"You claimed all the beacons! Now grab a drink to increase your Bar Score." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        
+    }
 }
 
 - (void)promptForRegistration {
@@ -527,16 +525,18 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     if ([fileManager fileExistsAtPath:imagePath isDirectory:NO]) {
         NSLog(@"..loading image from %@", imagePath);
         
-        
         /** cropping some of the image here */
-        CGRect cropRect = CGRectMake(0,50, 325, 380);
+//        CGRect cropRect = CGRectMake(0, 0, 320, 480);
         
         UIImage *original =[UIImage imageWithContentsOfFile:imagePath];
         
-        UIImage *newImage = [original croppedImage:cropRect];
+//        UIImage *newImage = [original croppedImage:cropRect];
         
      //  CM [self.photoButton setBackgroundImage:[UIImage imageWithContentsOfFile:imagePath] forState:UIControlStateNormal];
-        [self.photoButton setBackgroundImage:newImage forState:UIControlStateNormal];
+        [self.photoButton setBackgroundImage:nil forState:UIControlStateNormal];
+        self.photoButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        
+        [self.photoButton setBackgroundImage:original forState:UIControlStateNormal];
         
         [self.photoButton setTitle:@"" forState:UIControlStateNormal];
     }
@@ -547,13 +547,9 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
    
 }
 
-- (void)uploadUserImage:(NSString *)imagePath {
+- (void)uploadUserImage:(NSData *)data {
     NSInteger userId = [[NSUserDefaults standardUserDefaults] integerForKey:USER_ID_KEY];
     NSString *suserId = [NSString stringWithFormat:@"%li", (long)userId];
-    
-    NSLog(@"upload image for user %li with %@", (long)userId, imagePath);
-    
-    NSData *data = [NSData dataWithContentsOfFile:imagePath];
     
     [self.navigationController showSGProgressWithDuration:4 andTintColor:[UIColor blueColor]];
     
@@ -668,27 +664,28 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     NSLog(@"image picker delegate.....");
     
-    UIImage *image = info[UIImagePickerControllerOriginalImage];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
-    //CM for new resize and image orientation fixes 
-    CGSize constraint = CGSizeMake(400, 400);
-    UIImage *newImage = [image resizedImage:constraint interpolationQuality:kCGInterpolationHigh ];
+    UIImage *image = info[UIImagePickerControllerOriginalImage];
+ 
+    // resize image
+    image = [image resizedImage:CGSizeMake(image.size.width, image.size.height) interpolationQuality:kCGInterpolationHigh];
+    
+    // write the image to disk
+    NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *docsDir = dirPaths[0];
+    NSString *imagePath = [docsDir stringByAppendingPathComponent:USER_IMAGE_FILE];
+    NSData *fileData = [NSData dataWithData:UIImagePNGRepresentation(image)];
+    [fileData writeToFile:imagePath atomically:YES];
+    
+    // resize image for upload
+    UIImage *newImage = [image resizedImage:CGSizeMake(400, 400) interpolationQuality:kCGInterpolationHigh ];
     
     NSData *data = [NSData dataWithData:UIImagePNGRepresentation(newImage)];
     
-    NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docsDir = dirPaths[0];
-    
-    // write the image to disk
-    NSString *imagePath = [docsDir stringByAppendingPathComponent:USER_IMAGE_FILE];
-    [data writeToFile:imagePath atomically:YES];
-    
     [self loadUserImage];
-    
-    [picker dismissViewControllerAnimated:YES completion:nil];
-    
-    [self uploadUserImage:imagePath];
 
+    [self uploadUserImage:data];
 }
 
 #pragma mark - CLLocationManagerDelegate 
@@ -711,6 +708,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     
 }
 
+#pragma mark - UITextFieldDelegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     
     BOOL allow = !((textField.text.length >= 11) && range.length == 0);
