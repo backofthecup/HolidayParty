@@ -38,7 +38,7 @@ NSInteger const kUserWelcomeNotificationType = 2;
         
         CLLocationCoordinate2D location = CLLocationCoordinate2DMake(40.71972369, -73.99946627);
         
-        _barGPSRegion = [[CLCircularRegion alloc]initWithCenter:location radius:25.0 identifier:@"com.appsontheside.HolidayParty.BarGPSRegion"];
+        _barGPSRegion = [[CLCircularRegion alloc]initWithCenter:location radius:15.0 identifier:@"com.appsontheside.HolidayParty.BarGPSRegion"];
 
         
         _btReady = NO;
