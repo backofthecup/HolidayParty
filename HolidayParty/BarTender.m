@@ -14,6 +14,7 @@ static NSString * const USER_ID = @"userId";
 static NSString * const USER_WELCOMED = @"userWelcomed";
 static float const BAR_BEACON_THRESHOLD = 6.5f;
 
+
 NSInteger const kBarScoreUpdateNotificationType = 1;
 NSInteger const kUserWelcomeNotificationType = 2;
 
