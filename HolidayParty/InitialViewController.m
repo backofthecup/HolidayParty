@@ -82,6 +82,8 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     [self.playButton.layer setBorderColor:[UIColor colorWithRed:209 green:238 blue:255 alpha:1.0].CGColor];
     [self.playButton.layer setBorderWidth:1.0f];
     
+    
+    
     // get the persistent beacons
     _beacons = [[CoreDataDao sharedDao] beacons];
     

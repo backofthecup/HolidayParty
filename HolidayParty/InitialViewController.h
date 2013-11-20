@@ -24,6 +24,7 @@
 @property (strong, nonatomic) id bluetoothStatusObserver;
 @property (strong, nonatomic) id welcomeMessageObserver;
 
+
 - (IBAction)photoButtonTapped:(id)sender;
 - (IBAction)userButtonTapped:(id)sender;
 - (IBAction)playButtonTapped:(id)sender;
