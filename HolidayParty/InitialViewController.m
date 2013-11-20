@@ -109,7 +109,10 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
     //CM called from the barTender instance
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
-    [center addObserverForName:@"BarScoreUpdate" object:nil
+    
+    __weak InitialViewController *weakSelf = self;
+    
+    self.barScoreObserver = [center addObserverForName:@"BarScoreUpdate" object:nil
                          queue:mainQueue usingBlock:^(NSNotification *note) {
                              
                              NSLog(@"BarScore Update notification handled");
@@ -117,17 +120,24 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                              NSDictionary *userInfo = note.userInfo;
                              NSNumber *barScoreData = [userInfo objectForKey:@"barScore"];
                              
-                             self.barScoreLabel.text = [NSString stringWithFormat:@"%@", barScoreData];
+                             InitialViewController *strongSelf = weakSelf;
                              
-                             NSLog(@"BarScore Update notification handled %@", barScoreData);
+                             if (strongSelf) {
+                                strongSelf.barScoreLabel.text = [NSString stringWithFormat:@"%@", barScoreData];
+                             
+                                 NSLog(@"BarScore Update notification handled %@", barScoreData);
+                             }
                              
                              
                          }];
 
-        [center addObserverForName:@"UserWelcomeMessage" object:nil
+        self.welcomeMessageObserver = [center addObserverForName:@"UserWelcomeMessage" object:nil
                          queue:mainQueue usingBlock:^(NSNotification *note) {
                              
-                             [TSMessage showNotificationInViewController:self
+                             InitialViewController *strongSelf = weakSelf;
+                             
+                             if (strongSelf) {
+                             [TSMessage showNotificationInViewController:strongSelf
                                                                    title:NSLocalizedString(@"You made it!  Thanks for coming", nil)
                                                                 subtitle:NSLocalizedString(@"Grab a drink and update your Bar Score", nil)
                                                                     type:TSMessageNotificationTypeSuccess
@@ -137,15 +147,20 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                                                           buttonCallback:nil
                                                               atPosition:TSMessageNotificationPositionTop
                                                      canBeDismisedByUser:YES];
+                             }
                              
                          }];
     
-    [center addObserverForName:@"BarScoreUpdateFailed" object:nil
+    self.barScoreFailedObserver = [center addObserverForName:@"BarScoreUpdateFailed" object:nil
                          queue:mainQueue usingBlock:^(NSNotification *note) {
                              
                              NSLog(@"BarScore Update Failed");
                              
-                             [TSMessage showNotificationInViewController:self
+                             InitialViewController *strongSelf = weakSelf;
+                             
+                             if (strongSelf) {
+                             
+                             [TSMessage showNotificationInViewController:strongSelf
                                                                    title:NSLocalizedString(@"BarScoreUpdate Failed!", nil)
                                                                 subtitle:NSLocalizedString(@"Check your network connection", nil)
                                                                     type:TSMessageNotificationTypeError
@@ -155,10 +170,11 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
                                                           buttonCallback:nil
                                                               atPosition:TSMessageNotificationPositionTop
                                                      canBeDismisedByUser:YES];
+                             }
                              
                          }];
     
-    [center addObserverForName:@"Bluetooth Status" object:nil queue:mainQueue usingBlock:^(NSNotification *note) {
+    self.bluetoothStatusObserver = [center addObserverForName:@"Bluetooth Status" object:nil queue:mainQueue usingBlock:^(NSNotification *note) {
         NSLog(@"..Bluetooth status changed....");
         
         NSDictionary *bluetoothInfo = note.userInfo;
@@ -169,14 +185,18 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
         NSLog(@"btSTatus is %@", btStatus);
         NSLog(@"btStateString is %@", btStateString);
         
+        InitialViewController *strongSelf = weakSelf;
+        
+        if (strongSelf) {
+            
         if ([btStatus boolValue]) {
-            self.isBluetoothOn = YES;
+            strongSelf.isBluetoothOn = YES;
         }
         else {
             // bluetooth not on
 //            [_bluetoothAlertView show];
-            self.isBluetoothOn = NO;
-            [self stopRanging];
+            strongSelf.isBluetoothOn = NO;
+            [strongSelf stopRanging];
         }
         
         /* note:  btStatus 1 : Bluetooth powered on.
@@ -184,6 +204,7 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
          
                   if btStatus 0 then check the state string
         */
+        }
      
     }];
     
@@ -693,8 +714,12 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 {
     NSLog(@"...locationManager didRangeBeacons....%lu", (unsigned long)[beacons count]);
     
+    NSLog(@"... beacon ID is %@" , [region.proximityUUID UUIDString]);
+    NSLog(@" bar beacon UUID is %@" ,[[[BarTender sharedInstance] defaultProximityUUID] UUIDString]);
+    
     //CM should be two beacons if the region is the bar region
     if ([[region.proximityUUID UUIDString] isEqualToString:[[[BarTender sharedInstance] defaultProximityUUID] UUIDString]]) {
+        NSLog(@"Checking proximity");
         [[BarTender sharedInstance] checkForBarProximity:beacons];
      
         //return out of this if it's the bar UUID
@@ -715,5 +740,15 @@ static NSString * const BAR_SCORE_KEY = @"barScore";
 
     return allow;
 }
+
+- (void) viewDidUnload
+{
+    NSLog(@"Unloading view ");
+    [[NSNotificationCenter defaultCenter] removeObserver:self.barScoreObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.barScoreFailedObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.bluetoothStatusObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.welcomeMessageObserver ];
+}
+
 
 @end

@@ -19,6 +19,10 @@
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) IBOutlet UIImageView *iconBarImage;
 @property (strong, nonatomic) IBOutlet UIButton *playButton;
+@property (strong, nonatomic) id barScoreObserver;
+@property (strong, nonatomic) id barScoreFailedObserver;
+@property (strong, nonatomic) id bluetoothStatusObserver;
+@property (strong, nonatomic) id welcomeMessageObserver;
 
 - (IBAction)photoButtonTapped:(id)sender;
 - (IBAction)userButtonTapped:(id)sender;
