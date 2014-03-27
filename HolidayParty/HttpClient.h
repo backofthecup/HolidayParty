@@ -8,7 +8,7 @@
 
 #import "AFNetworking.h"
 
-static NSString * const BASE_URL = @"http://ec2-54-200-209-241.us-west-2.compute.amazonaws.com/";
+static NSString * const BASE_URL = @"some url that you make up";
 static NSString * const REGISTER_PATH = @"register";
 static NSString * const CHANGE_USER_PATH = @"update_name";
 static NSString * const UPLOAD_IMAGE_PATH = @"upload";
